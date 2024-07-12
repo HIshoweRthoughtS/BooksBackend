@@ -1,11 +1,21 @@
-const sqlite = require('better-sqlite3');
-const path = require('path');
-const db = new sqlite(path.resolve('../../db/books.db'), {fileMustExist: true});
+const Database = require('better-sqlite3');
+const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMustExist:true });
+db.pragma('journal_mode = WAL');
 
-function query(sql, params) {
-  return db.prepare(sql).all(params);
+
+//todo: joins to return authors and publishers and etc
+function selectAllBooks() {
+  return db.prepare('select * from book').all();
+}
+
+function selectAllAuthors() {
+  return db.prepare('select * from author').all();
+}
+
+function selectAllPublishers() {
+  return db.prepare('select * from publisher').all();
 }
 
 module.exports = {
-  query
+  selectAllBooks,selectAllAuthors,selectAllPublishers
 }
