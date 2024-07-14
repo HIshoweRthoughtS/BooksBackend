@@ -1,5 +1,6 @@
-const express = require('express');
-const bookService = require('../shared/services/books.service');
+import * as bookService from '../shared/services/books.service.js';
+
+import express from 'express';
 const router = express.Router();
 
 /* GET books listing. */
@@ -15,5 +16,4 @@ router.get('/', function(req, res, next) {
 
 //get todos
 //get reviewed
-
-module.exports = router;
+export default router;

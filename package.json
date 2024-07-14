@@ -2,6 +2,7 @@
   "name": "booklistbackend",
   "version": "1.0.0",
   "description": "Rest Api for my booklist storage",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,6 +16,7 @@
   "author": "HIshoweRthoughtS",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "better-sqlite3": "^11.1.2",
     "express": "^4.19.2"
   }

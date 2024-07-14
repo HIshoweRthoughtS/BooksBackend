@@ -1,17 +1,13 @@
-const dbDriver = require('./sqlite.driver.service')
+import * as dbBooks from './dbdrivers/book.sqlite.js'
 
-function getAllBooks() {
-    return dbDriver.selectAllBooks();
+export function getAllBooks() {
+    return dbBooks.selectAllBooks();
 }
 
-function getAllAuthors() {
-    return dbDriver.selectAllBooks();
+export function getAllAuthors() {
+    return dbBooks.selectAllBooks();
 }
 
-function getAllPublishers() {
-    return dbDriver.selectAllBooks();
-}
-
-module.exports = {
-    getAllBooks
+export function getAllPublishers() {
+    return dbBooks.selectAllBooks();
 }
