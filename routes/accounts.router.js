@@ -6,11 +6,10 @@ const router = express.Router();
 //==================End of imports=====================================
 
 router.post('/', (req, res) => {
-    console.log('[account post] req.params: ', req.params);
     accService.createAccount(
-        req.params.body.name, req.params.body.password, req.params.body.email,
-        (id) => res.json({info: 'success', user_id: id}),
-        (msg) => res.json({info: 'fail', detail: msg})
+        req.body.name, req.body.password, req.body.email,
+        (id) => res/*.status(200)*/.json({info: 'success', user_id: id}).send(),
+        (msg) => res/*.status(500)*/.json({info: 'fail', detail: msg})
     )
 });
 
