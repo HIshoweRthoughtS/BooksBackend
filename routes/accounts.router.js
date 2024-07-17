@@ -10,7 +10,20 @@ router.post('/', (req, res) => {
         req.body.name, req.body.password, req.body.email,
         (id) => res/*.status(200)*/.json({info: 'success', user_id: id}).send(),
         (msg) => res/*.status(500)*/.json({info: 'fail', detail: msg})
-    )
+    );
+});
+
+router.post('/login', (req, res) => {
+     accService.loginAccount(req.body.name, req.body.password,
+        (user_info) => {
+            req.session.accId = user_info.rowid;
+            req.session.loginName = user_info.login_name;
+            console.log(req.session);
+            console.log(req.session.id);
+            res.status(200).json({info: 'success', detail: user_info});
+        },
+        (error) => res.json({info: 'fail', detail: error}) 
+     );
 });
 
 

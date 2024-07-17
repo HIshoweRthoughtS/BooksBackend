@@ -39,13 +39,19 @@ export function createAccount(login_name, password, mail, handleSuccess/*(acc.id
     //end of function
     //NO MORE LINES
 }
-
-function pwMatchAccContinue(login_name, password, authenticated, fail) {
-    const digest = dbAccount.getAccount(login_name).pw_digest;
+export function loginAccount(login_name, password, authenticated, fail) {
+    fail = fail ? fail : console.log;
+    const account = dbAccount.getAccount(login_name);
+    const accId = account.rowid;
+    const digest = account.pw_digest;
     bcrypt.compare(password, digest, (err, res) => {
     if(res) {
-        authenticated(login_name);
+        console.log('[Login] comper suc');
+        dbAccount.changeLogin(accId);
+        console.log('[Login] Updated last in');
+        authenticated(account);
     } else {
+        console.log('[Login] comper er: ', err);
         fail(err);
     }
   });

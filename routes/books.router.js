@@ -9,8 +9,19 @@ router.get('/', function(req, res, next) {
   try {
     res.json(bookService.getAllBooks());
   } catch(err) {
-    console.error(`Error while getting quotes `, err.message);
+    console.error(`Error while getting Books `, err.message);
     next(err);
+  }
+});
+
+router.get('/reviewed', (req, res) => {
+  console.log(req.session);
+  console.log(req.session.id);
+  if (!req.session.accId || !req.session.loginName) {
+    res.json({info: 'fail', detail: 'you are not logged in!'}); //.status(401)
+  } else {
+    const reviewedBooks = bookService.getReviewedForAcc(req);
+    res.json({info: 'success', detail: {login_name: req.session.login_name, reviewed_books: reviewedBooks}});
   }
 });
 

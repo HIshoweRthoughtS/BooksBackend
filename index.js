@@ -4,11 +4,19 @@ import accountsRouter from './routes/accounts.router.js';
 //3rd Party
 import express from 'express';
 const app = express();
+import session from 'express-session';
+app.use(session({
+  secret: 'hundiwauwau',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false },
+}));
+
 
 import cors from 'cors';
 const corsOptions = {
-  credentials: false,
-  origin: ['http://localhost:3000', 'http://localhost:4200']
+  credentials: true,
+  origin: ['http://localhost:3000', 'http://localhost:4200', 'http://localhost:59882', 'http://localhost:59961','http://localhost:54631']
 };
 app.use(cors(corsOptions));
 

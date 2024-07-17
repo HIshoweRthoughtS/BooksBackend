@@ -11,3 +11,7 @@ export function getAllAuthors() {
 export function getAllPublishers() {
     return dbBooks.selectAllBooks();
 }
+
+export function getReviewedForAcc(acc_id) {
+    return dbBooks.getReviewedForAcc(acc_id);
+} 

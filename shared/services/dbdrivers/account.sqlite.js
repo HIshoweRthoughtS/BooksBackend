@@ -1,5 +1,5 @@
 
-//3rd Pary
+//3rd Party
 import Database from 'better-sqlite3';
 const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMustExist:true });
 // db.pragma('journal_mode = WAL'); //enough if just once in book.sqlite..
@@ -7,13 +7,15 @@ const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMu
 //Prepared Statements
 const insertAccountStmt = db.prepare("INSERT INTO account (login_name, pw_digest, email) VALUES (@name, @pw, @mail);")
 
-const selectAccountStmt = db.prepare("SELECT rowid, *  FROM account WHERE login_name = ?;");
-const selectUniqueConstrainsStmt = db.prepare("SELECT rowid,* FROM account WHERE rowid = @row OR login_name = @name OR email = @mail;")
+const selectUniqueConstrainsStmt = db.prepare("SELECT * FROM account_no_pw WHERE rowid = @row OR login_name = @name OR email = @mail;")
 
-const updateAccountLoginStmt = db.prepare("UPDATE account SET last_login = CURRENT_TIMESTAMP WHERE login_name = ?")
-const updateAccountLogoutStmt = db.prepare("UPDATE account SET last_logout = CURRENT_TIMESTAMP WHERE login_name = ?")
+const selectAccountByNameStmt = db.prepare("SELECT rowid, *  FROM account WHERE login_name = ?;");
+const selectAccountByIdStmt = db.prepare("SELECT *  FROM account_no_pw WHERE rowid = ?;");
 
-const updateAccountEmailStmt = db.prepare("UPDATE account SET email = @mail WHERE login_name = @name")
+const updateAccountLoginStmt = db.prepare("UPDATE account SET last_login = CURRENT_TIMESTAMP WHERE rowid = ?")
+const updateAccountLogoutStmt = db.prepare("UPDATE account SET last_logout = CURRENT_TIMESTAMP WHERE rowid = ?")
+
+const updateAccountEmailStmt = db.prepare("UPDATE account SET email = @mail WHERE rowid = @name")
 
 //Pre..stmt wrapper
 // i like it but no use now
@@ -43,23 +45,26 @@ export function checkUnique(login_name, email) {
     return rows.length > 0 ? false:true;
 }
 export function getAccountId(login_name) {
-    selectAccountStmt.pluck();
+    selectAccountByNameStmt.pluck();
     const row = getAccount(login_name);
-    selectAccountStmt.pluck(false);
+    selectAccountByNameStmt.pluck(false);
     return row ? row : -1;
 }
 export function getAccount(login_name) {
-    return selectAccountStmt.get(login_name);
+    return selectAccountByNameStmt.get(login_name);
+}
+export function getAccountById(acc_id) {
+    return selectAccountByIdStmt.get(acc_id);
 }
 //throwerror
-export function changeLogin(login_name) {
-    updateAccountLoginStmt.run(login_name);
+export function changeLogin(acc_id) {
+    console.log(updateAccountLoginStmt.run(acc_id));
 }
 //throwerror
-export function changeLogout(login_name) {
-    updateAccountLogoutStmt.run(login_name);
+export function changeLogout(acc_id) {
+    updateAccountLogoutStmt.run(acc_id);
 }
 //throwerror
-export function changeEmail(login_name, email) {
-    updateAccountEmailStmt.run({name: login_name, mail: email});
+export function changeEmail(acc_id, email) {
+    updateAccountEmailStmt.run({name: acc_id, mail: email});
 }
