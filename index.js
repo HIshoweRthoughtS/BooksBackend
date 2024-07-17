@@ -16,7 +16,7 @@ app.use(session({
 import cors from 'cors';
 const corsOptions = {
   credentials: true,
-  origin: ['http://localhost:3000', 'http://localhost:4200', 'http://localhost:59882', 'http://localhost:59961','http://localhost:54631']
+  origin: ['http://localhost:3000', 'http://localhost:4200', 'http://localhost:53122']
 };
 app.use(cors(corsOptions));
 

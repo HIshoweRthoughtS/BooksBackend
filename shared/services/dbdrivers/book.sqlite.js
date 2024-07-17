@@ -12,5 +12,7 @@ const selectReviewdForAcc = db.prepare("SELECT * FROM reviewed_book WHERE join_a
 //todo: joins to return authors and publishers and etc
 
 export function getReviewedForAcc(acc_id) {
-  return selectReviewdForAcc.all(acc_id);
+  console.log('[bsql]select reviewed acc: ', typeof acc_id);
+
+  return selectReviewdForAcc.all(parseInt(acc_id));
 }

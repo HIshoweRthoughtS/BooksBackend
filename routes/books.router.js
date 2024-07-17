@@ -20,7 +20,7 @@ router.get('/reviewed', (req, res) => {
   if (!req.session.accId || !req.session.loginName) {
     res.json({info: 'fail', detail: 'you are not logged in!'}); //.status(401)
   } else {
-    const reviewedBooks = bookService.getReviewedForAcc(req);
+    const reviewedBooks = bookService.getReviewedForAcc(req.session.accId);
     res.json({info: 'success', detail: {login_name: req.session.login_name, reviewed_books: reviewedBooks}});
   }
 });
