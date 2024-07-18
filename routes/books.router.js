@@ -25,6 +25,15 @@ router.get('/reviewed', (req, res) => {
   }
 });
 
+router.get('/todo', (req, res) => {
+  if (!req.session.accId || !req.session.loginName) {
+    res.json({info: 'fail', detail: 'you are not logged in!'}); //.status(401)
+  } else {
+    const todoBooks = bookService.getTodoForAcc(req.session.accId);
+    res.json({info: 'success', detail: {login_name: req.session.login_name, todo_books: todoBooks}});
+  }
+});
+
 //get todos
 //get reviewed
 export default router;
