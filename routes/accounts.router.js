@@ -16,7 +16,7 @@ router.post('/', (req, res) => {
 router.post('/login', (req, res) => {
      accService.loginAccount(req.body.name, req.body.password,
         (user_info) => {
-            req.session.accId = user_info.rowid;
+            req.session.accId = user_info.id_ref;
             req.session.loginName = user_info.login_name;
             console.log(req.session);
             console.log(req.session.id);

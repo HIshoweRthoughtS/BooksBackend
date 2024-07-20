@@ -1,5 +1,5 @@
 
-const creationMsg = {
+export default {
     //success
     success: 'Account has been created',
     //fail
@@ -7,5 +7,3 @@ const creationMsg = {
     duplicate_other: 'A UNIQUE constraint failed',
     dberror: 'A database error occured during creation. Aborted',
 };
-
-export default creationMsg;

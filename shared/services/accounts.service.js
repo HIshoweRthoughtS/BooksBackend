@@ -1,4 +1,4 @@
-import * as dbAccount from './dbdrivers/account.sqlite.js'
+import * as dbAccount from './dbdrivers/sqlite/account.sqlite.js'
 import creationMsg from '../enums/user.enumeration.js'
 
 //3rd Party
@@ -31,6 +31,7 @@ export function createAccount(login_name, password, mail, handleSuccess/*(acc.id
                     handleSuccess(tmp.lastInsertRowid);
                 } catch (e) {
                     console.log('[accserv] insert e: ', e);
+                    //LAST LINE
                     handleFail(creationMsg.error);
                 }
             }
@@ -41,20 +42,36 @@ export function createAccount(login_name, password, mail, handleSuccess/*(acc.id
 }
 export function loginAccount(login_name, password, authenticated, fail) {
     fail = fail ? fail : console.log;
+
+    let login = false;
     const account = dbAccount.getAccount(login_name);
-    const accId = account.rowid;
-    const digest = account.pw_digest;
-    bcrypt.compare(password, digest, (err, res) => {
-    if(res) {
-        console.log('[Login] comper suc');
-        dbAccount.changeLogin(accId);
-        console.log('[Login] Updated last in');
-        authenticated(account);
+    console.log('[AccS] login - acc: ', account);
+    //todo: maybe create seperate select with only relevent detail ..(login_name, 'login'|Selects.login)
+    if (account) {
+        const digest = account.pw_digest;
+        bcrypt.compare(password, digest, (err, res) => {
+            if (err) {
+                console.log('login - comper er: ', err);
+                fail(err);
+            } else {
+                console.log('login - result: ', res);
+                if(res) {
+                    login = true;
+                    dbAccount.changeLogin(account.id_ref);
+                    console.log('login - Updated last in');
+                    console.log('login - comper suc');
+                    authenticated(account);
+                } else {
+                    fail('name or password incorrect');
+                }
+            }
+        });
     } else {
-        console.log('[Login] comper er: ', err);
-        fail(err);
+        //LAST LINE
+        fail('name or password incorrect');
     }
-  });
+    //end of function
+    //NO MORE LINES
 }
 
 

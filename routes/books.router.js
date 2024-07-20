@@ -13,25 +13,19 @@ router.get('/', function(req, res, next) {
     next(err);
   }
 });
+router.post('/', (req, res, next) => {
+  bookService.createBookFromBody(req.body);
+  res.json({info:'success', detail: 'Book created'});
+});
 
 router.get('/reviewed', (req, res) => {
-  console.log(req.session);
-  console.log(req.session.id);
-  if (!req.session.accId || !req.session.loginName) {
-    res.json({info: 'fail', detail: 'you are not logged in!'}); //.status(401)
-  } else {
-    const reviewedBooks = bookService.getReviewedForAcc(req.session.accId);
-    res.json({info: 'success', detail: {login_name: req.session.login_name, reviewed_books: reviewedBooks}});
-  }
+  const reviewedBooks = bookService.getReviewedForAcc(req.session.accId);
+  res.json({info: 'success', detail: {login_name: req.session.login_name, reviewed_books: reviewedBooks}});
 });
 
 router.get('/todo', (req, res) => {
-  if (!req.session.accId || !req.session.loginName) {
-    res.json({info: 'fail', detail: 'you are not logged in!'}); //.status(401)
-  } else {
-    const todoBooks = bookService.getTodoForAcc(req.session.accId);
-    res.json({info: 'success', detail: {login_name: req.session.login_name, todo_books: todoBooks}});
-  }
+  const todoBooks = bookService.getTodoForAcc(req.session.accId);
+  res.json({info: 'success', detail: {login_name: req.session.login_name, todo_books: todoBooks}});
 });
 
 //get todos

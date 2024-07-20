@@ -1,6 +1,8 @@
 import booksRouter from './routes/books.router.js';
 import accountsRouter from './routes/accounts.router.js';
 
+import * as loginMW from './shared/middleware/login.middleware.js';
+
 //3rd Party
 import express from 'express';
 const app = express();
@@ -46,7 +48,7 @@ app.get('/', (req, res) => {
   res.json({message: 'alive'});
 });
 
-app.use('/books', booksRouter);
+app.use('/books', loginMW.youShallNotPass, booksRouter);
 app.use('/account', accountsRouter);
 
 app.listen(port, () => {

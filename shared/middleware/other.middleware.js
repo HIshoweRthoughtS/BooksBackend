@@ -1,8 +1,6 @@
-import creationMsg from '../enums/user.enumeration'
 
-
-
-
+import creationMsg from '../enums/user.enumeration.js'
+ 
 
 function userCreationHandler(msg) {
     switch (msg) {
@@ -17,7 +15,3 @@ function userCreationHandler(msg) {
             break;
     }
 }
-
-
-//user loged in mw -> change last login
-//user logs out mw -> change last logout
