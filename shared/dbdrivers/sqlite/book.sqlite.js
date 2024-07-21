@@ -2,7 +2,20 @@
 //3rd Party
 import Database from 'better-sqlite3';
 const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMustExist:true });
-db.pragma('journal_mode = WAL');
+
+/**
+ * BOOK
+ * NOT NULL:  isbn, join_author, join_publisher, title
+ * UNIQUE:    isbn
+ * 
+ * TODO
+ * NOT NULL:  join_acc, join_book
+ * UNIQUE:    join_acc + join_book
+ * 
+ * REVIEWED
+ * NOT NULL:  join_book, join_acc, first_impression, last_updated (default), 
+ * UNIQUE:    join_book + join_acc
+ */
 
 //Prepared Statements
 const insertNewEssential = db.prepare("INSERT INTO book (isbn,join_author,join_publisher,title) VALUES (@isbn,@autorid,@pubid,@title);");

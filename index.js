@@ -1,5 +1,6 @@
 import booksRouter from './routes/books.router.js';
 import accountsRouter from './routes/accounts.router.js';
+import devRouter from './routes/dev.router.js';
 
 import * as loginMW from './shared/middleware/login.middleware.js';
 
@@ -48,8 +49,9 @@ app.get('/', (req, res) => {
   res.json({message: 'alive'});
 });
 
-app.use('/books', loginMW.youShallNotPass, booksRouter);
+app.use('/books', /*loginMW.youShallNotPass,*/ booksRouter);
 app.use('/account', accountsRouter);
+app.use('/dev', devRouter);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

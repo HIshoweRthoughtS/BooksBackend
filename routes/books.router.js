@@ -13,9 +13,13 @@ router.get('/', function(req, res, next) {
     next(err);
   }
 });
-router.post('/', (req, res, next) => {
-  bookService.createBookFromBody(req.body);
-  res.json({info:'success', detail: 'Book created'});
+router.post('/', (req, res) => {
+  const success = bookService.createBookFromBody(req.body);
+  if (success) {
+    res.json({info:'success', detail: 'Book created'});
+  } else {
+    res.json({info:'fail', detail: 'Book not created'});
+  }
 });
 
 router.get('/reviewed', (req, res) => {
@@ -28,6 +32,4 @@ router.get('/todo', (req, res) => {
   res.json({info: 'success', detail: {login_name: req.session.login_name, todo_books: todoBooks}});
 });
 
-//get todos
-//get reviewed
 export default router;

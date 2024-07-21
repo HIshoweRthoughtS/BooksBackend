@@ -4,6 +4,11 @@ import Database from 'better-sqlite3';
 const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMustExist:true });
 // db.pragma('journal_mode = WAL'); //enough if just once in book.sqlite..
 
+/**
+ * NOT NULL:    login_name, pw_digest
+ * UNIQUE:      login_name, email
+ */
+
 //Prepared Statements
 const insertNewEssential = db.prepare("INSERT INTO account (login_name, pw_digest) VALUES (@loginname, @pw);");
 const insertAccountStmt = db.prepare("INSERT INTO account (login_name, pw_digest, email) VALUES (@name, @pw, @mail);")

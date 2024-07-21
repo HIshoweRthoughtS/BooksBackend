@@ -1,4 +1,4 @@
-import * as dbAccount from './dbdrivers/sqlite/account.sqlite.js'
+import * as dbAccount from '../dbdrivers/sqlite/account.sqlite.js'
 import creationMsg from '../enums/user.enumeration.js'
 
 //3rd Party
