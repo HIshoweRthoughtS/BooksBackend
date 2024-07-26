@@ -4,8 +4,9 @@ import * as devdb from '../shared/dbdrivers/sqlite/devtools.sqlite.js';
 import express from 'express';
 const router = express.Router();
 
-router.get('deletedb', (res, req) => {
+router.get('/deletedb', (req, res) => {
     devdb.deleteAll();
+    res.json({summary:'Done'});
 });
 
 export default router;

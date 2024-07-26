@@ -60,7 +60,7 @@ export function loginAccount(login_name, password, authenticated, fail) {
                     dbAccount.changeLogin(account.id_ref);
                     console.log('login - Updated last in');
                     console.log('login - comper suc');
-                    authenticated(account);
+                    authenticated({...account, pw_digest: null});
                 } else {
                     fail('name or password incorrect');
                 }

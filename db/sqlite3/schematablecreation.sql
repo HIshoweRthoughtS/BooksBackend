@@ -71,9 +71,9 @@ this column will me named: id_ref
 --TABLES=====================================================
 --=====================NO FOREIGN KEYS=======================
 --done
-create table account (id_ref INTEGER, login_name text NOT NULL UNIQUE, pw_digest text NOT NULL, email text UNIQUE, last_login DATETIME CHECK(last_login <= CURRENT_TIMESTAMP), last_logout DATETIME CHECK(last_logout <= CURRENT_TIMESTAMP), created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL CHECK(created_at <= CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC));
+create table account (id_ref INTEGER, loginname text NOT NULL UNIQUE, pw_digest text NOT NULL, email text UNIQUE, last_login DATETIME CHECK(last_login <= CURRENT_TIMESTAMP), last_logout DATETIME CHECK(last_logout <= CURRENT_TIMESTAMP), created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL CHECK(created_at <= CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC));
 --template | to have fun with
-create table account (id_ref INTEGER, login_name text NOT NULL UNIQUE, pw_digest text NOT NULL, email text UNIQUE, last_login DATETIME CHECK(last_login <= CURRENT_TIMESTAMP), last_logout DATETIME CHECK(last_logout <= CURRENT_TIMESTAMP), created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL CHECK(created_at <= CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC));
+create table account (id_ref INTEGER, loginname text NOT NULL UNIQUE, pw_digest text NOT NULL, email text UNIQUE, last_login DATETIME CHECK(last_login <= CURRENT_TIMESTAMP), last_logout DATETIME CHECK(last_logout <= CURRENT_TIMESTAMP), created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL CHECK(created_at <= CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC));
 
 --Aus author, publisher, book sollten eig nie Einträge gelöscht werden. Genau so auch ReviewedBook
 --d. h. werden sie referenziert in foreign keys, ist ON UPDATE CASCADE ON DELETE RESTRICT
@@ -98,6 +98,7 @@ but age restriction maybe in a status 0001 -> fsk etc
 */
 
 --todo
+create table marker_colors (id_ref INTEGER, color_name text NOT NULL, color_code INTEGER NOT NULL DEFAULT id_ref, meaning text NOT NULL, PRIMARY KEY (id_ref ASC));
 --template | to have fun with
 create table marker_colors (id_ref INTEGER, color_name text NOT NULL, color_code INTEGER NOT NULL DEFAULT id_ref, meaning text NOT NULL, PRIMARY KEY (id_ref ASC));
 /*
@@ -130,8 +131,9 @@ No, never seen him.
 */
 
 --todo
+create table todo_reminder (id_ref INTEGER, join_user_todo INTEGER NOT NULL, title text DEFAULT 'UNTITLED', content text NOT NULL, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_user_todo) REFERENCES user_todo_book (id_ref) ON UPDATE CASCADE ON DELETE CASCADE);
 --template | to have fun with
-create table todo_reminder (id_ref INTEGER, join_user_todo INTEGER NOT NULL, title text DEFAULT 'UNTITLED', content text NOT NULL PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_user_todo) ON UPDATE CASCADE ON DELETE CASCADE)
+create table todo_reminder (id_ref INTEGER, join_user_todo INTEGER NOT NULL, title text DEFAULT 'UNTITLED', content text NOT NULL, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_user_todo) REFERENCES user_todo_book (id_ref) ON UPDATE CASCADE ON DELETE CASCADE);
 
 --done | last committed
 create table reviewed_book (id_ref INTEGER, join_book INTEGER NOT NULL, join_acc INTEGER NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), first_impression text NOT NULL UNIQUE, order_rank INTEGER CHECK(order_rank >= 0), last_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(last_updated <= CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE SET DEFAULT);
@@ -171,6 +173,7 @@ the typical quicknote can be stored as an int, varchar would take up unneccessar
 */
 
 --todo
+create table quote (id_ref INTEGER, join_read INTEGER NOT NULL DEFAULT 1, join_book INTEGER NOT NULL, content text, note text, chapter text, page_from INTEGER, page_to INTEGER, line_from INTEGER, line_to INTEGER, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), is_public INTEGER NOT NULL CHECK(is_public BETWEEN 0 AND 1));
 --template | to have fun with
 create table quote (id_ref INTEGER, join_read INTEGER NOT NULL DEFAULT 1, join_book INTEGER NOT NULL, content text, note text, chapter text, page_from INTEGER, page_to INTEGER, line_from INTEGER, line_to INTEGER, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), is_public INTEGER NOT NULL CHECK(is_public BETWEEN 0 AND 1));
 /*
@@ -182,10 +185,11 @@ todo:[luxus] pages and chapter, have to be in book's bounds
 */
 
 --todo
+create table marker (id_ref INTEGER, join_quote INTEGER NOT NULL, join_color INTEGER NOT NULL, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_quote) REFERENCES quote (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_color) REFERENCES marker_colors (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 --template | to have fun with
 create table marker (id_ref INTEGER, join_quote INTEGER NOT NULL, join_color INTEGER NOT NULL, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_quote) REFERENCES quote (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_color) REFERENCES marker_colors (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 /*
 needs own table to mark one quote with more than on color
 */
 --VIEWS=============================================
-create view account_no_pw as select id_ref,login_name,email,last_login,last_logout,created_at from account;
+create view account_no_pw as select id_ref,loginname,email,last_login,last_logout,created_at from account;
