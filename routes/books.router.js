@@ -6,6 +6,8 @@ const router = express.Router();
 /* GET books listing. */
 //return all books (pagination?)
 router.get('/', function(req, res, next) {
+  //req.params -> sorting titiel authhor, etc
+  console.log('[GETALLBOOKS] req: ', req.params);
   try {
     res.json(bookService.getAllBooks());
   } catch(err) {
@@ -18,6 +20,7 @@ router.post('/', (req, res) => {
   if (success) {
     res.json({info:'success', detail: 'Book created'});
   } else {
+    //info:fail,detail:already exists so not quite fail
     res.json({info:'fail', detail: 'Book not created'});
   }
 });

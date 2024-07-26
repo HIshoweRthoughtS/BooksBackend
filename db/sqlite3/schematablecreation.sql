@@ -69,39 +69,54 @@ this column will me named: id_ref
 
 
 --TABLES=====================================================
+--=====================NO FOREIGN KEYS=======================
 --done
-create table account (id_ref INTEGER, login_name text NOT NULL UNIQUE, pw_digest text NOT NULL, email text UNIQUE, last_login DATETIME CHECK(last_login <= CURRENT_TIMESTAMP), last_logout DATETIME CHECK(last_logout <= CURRENT_TIMESTAMP), created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL CHECK(created_at <= CURRENT_TIMESTAMP), PRIMARY KEY(id_ref ASC));
+create table account (id_ref INTEGER, login_name text NOT NULL UNIQUE, pw_digest text NOT NULL, email text UNIQUE, last_login DATETIME CHECK(last_login <= CURRENT_TIMESTAMP), last_logout DATETIME CHECK(last_logout <= CURRENT_TIMESTAMP), created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL CHECK(created_at <= CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC));
 --template | to have fun with
-create table account (id_ref INTEGER, login_name text NOT NULL UNIQUE, pw_digest text NOT NULL, email text UNIQUE, last_login DATETIME CHECK(last_login <= CURRENT_TIMESTAMP), last_logout DATETIME CHECK(last_logout <= CURRENT_TIMESTAMP), created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL CHECK(created_at <= CURRENT_TIMESTAMP), PRIMARY KEY(id_ref ASC));
+create table account (id_ref INTEGER, login_name text NOT NULL UNIQUE, pw_digest text NOT NULL, email text UNIQUE, last_login DATETIME CHECK(last_login <= CURRENT_TIMESTAMP), last_logout DATETIME CHECK(last_logout <= CURRENT_TIMESTAMP), created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL CHECK(created_at <= CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC));
 
 --Aus author, publisher, book sollten eig nie Einträge gelöscht werden. Genau so auch ReviewedBook
 --d. h. werden sie referenziert in foreign keys, ist ON UPDATE CASCADE ON DELETE RESTRICT
 
 --done | last committed
-create table author (id_ref INTEGER, first_name text NOT NULL, last_name text NOT NULL, more_legal_names text, pseudonym text, birthday DATE, PRIMARY KEY(id_ref ASC));
+create table author (id_ref INTEGER, first_name text NOT NULL, last_name text NOT NULL, more_legal_names text, pseudonym text, birthday DATE, PRIMARY KEY (id_ref ASC));
 --template | to have fun with
-create table author (id_ref INTEGER, first_name text NOT NULL, last_name text NOT NULL, more_legal_names text, pseudonym text, birthday DATE, PRIMARY KEY(id_ref ASC));
+create table author (id_ref INTEGER, first_name text NOT NULL, last_name text NOT NULL, more_legal_names text, pseudonym text, birthday DATE, PRIMARY KEY (id_ref ASC));
 
 --done | last committed
-create table publisher (id_ref INTEGER, title text NOT NULL UNIQUE, country_of_origin text NOT NULL, hq_location text NOT NULL, PRIMARY KEY(id_ref ASC));
+create table publisher (id_ref INTEGER, title text NOT NULL UNIQUE, country_of_origin text NOT NULL, hq_location text NOT NULL, PRIMARY KEY (id_ref ASC));
 --template | to have fun with
-create table publisher (id_ref INTEGER, title text NOT NULL UNIQUE, country_of_origin text NOT NULL, hq_location text NOT NULL, PRIMARY KEY(id_ref ASC));
+create table publisher (id_ref INTEGER, title text NOT NULL UNIQUE, country_of_origin text NOT NULL, hq_location text NOT NULL, PRIMARY KEY (id_ref ASC));
 
 --done | last committed
-create table book (id_ref INTEGER, isbn text NOT NULL UNIQUE, join_author INTEGER NOT NULL, join_publisher INTEGER NOT NULL, title text NOT NULL, extended_title text, extra_info text, PRIMARY KEY(id_ref ASC), FOREIGN KEY (join_author) REFERENCES author (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_publisher) REFERENCES publisher (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+create table book (id_ref INTEGER, isbn text NOT NULL UNIQUE, join_author INTEGER NOT NULL, join_publisher INTEGER NOT NULL, title text NOT NULL, extended_title text, extra_info text, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_author) REFERENCES author (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_publisher) REFERENCES publisher (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 --template | to have fun with
-create table book (id_ref INTEGER, isbn text NOT NULL UNIQUE, join_author INTEGER NOT NULL, join_publisher INTEGER NOT NULL, title text NOT NULL, extended_title text, extra_info text, PRIMARY KEY(id_ref ASC), FOREIGN KEY (join_author) REFERENCES author (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_publisher) REFERENCES publisher (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+create table book (id_ref INTEGER, isbn text NOT NULL UNIQUE, join_author INTEGER NOT NULL, join_publisher INTEGER NOT NULL, title text NOT NULL, extended_title text, extra_info text, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_author) REFERENCES author (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_publisher) REFERENCES publisher (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 /*
 todo: store some kind of restriction. Like banned books that are not allowed to be reviewd, although something like that is never a good thing and i cant think of a use case rn
 but age restriction maybe in a status 0001 -> fsk etc
 */
 
---done | last committed
-create table user_todo_book (id_ref INTEGER, join_acc INTEGER NOT NULL, join_book INTEGER NOT NULL, order_rank INTEGER CHECK(order_rank >= 0), started_todo_date DATETIME, finished_todo_date DATETIME CHECK(finished_todo_date BETWEEN started_todo_date AND CURRENT_TIMESTAMP), PRIMARY KEY(id_ref ASC), FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+--todo
 --template | to have fun with
-create table user_todo_book (id_ref INTEGER, join_acc INTEGER NOT NULL, join_book INTEGER NOT NULL, order_rank INTEGER CHECK(order_rank >= 0), started_todo_date DATETIME, finished_todo_date DATETIME CHECK(finished_todo_date BETWEEN started_todo_date AND CURRENT_TIMESTAMP), PRIMARY KEY(id_ref ASC), FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+create table marker_colors (id_ref INTEGER, color_name text NOT NULL, color_code INTEGER NOT NULL DEFAULT id_ref, meaning text NOT NULL, PRIMARY KEY (id_ref ASC));
+/*
+color is enum 
+yellow = 0, meaning = 'note'
+green = 1, meaning = 'well written'
+orange = 2, meaning = 'quotable'
+blue = 3, meaning = 'external reference'
+purple = 4, meaning = 'personal relevance'
+pink = 5, meaning = 'high'
+*/
+
+--=====================WITH FOREIGN KEYS=======================
+--done | last committed
+create table user_todo_book (id_ref INTEGER, join_acc INTEGER NOT NULL, join_book INTEGER NOT NULL, order_rank INTEGER CHECK(order_rank >= 0), started_todo_date DATETIME, finished_todo_date DATETIME CHECK(finished_todo_date BETWEEN started_todo_date AND CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+--template | to have fun with
+create table user_todo_book (id_ref INTEGER, join_acc INTEGER NOT NULL, join_book INTEGER NOT NULL, order_rank INTEGER CHECK(order_rank >= 0), started_todo_date DATETIME, finished_todo_date DATETIME CHECK(finished_todo_date BETWEEN started_todo_date AND CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 --comments
-create table user_todo_book (id_ref INTEGER, join_acc INTEGER NOT NULL, join_book INTEGER NOT NULL, order_rank INTEGER CHECK(order_rank >= 0), started_todo_date DATETIME /*NULL*/ /*NO DEFAULT*/, finished_todo_date DATETIME CHECK(finished_todo_date BETWEEN started_todo_date AND CURRENT_TIMESTAMP), PRIMARY KEY(id_ref ASC), FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+create table user_todo_book (id_ref INTEGER, join_acc INTEGER NOT NULL, join_book INTEGER NOT NULL, order_rank INTEGER CHECK(order_rank >= 0), started_todo_date DATETIME /*NULL*/ /*NO DEFAULT*/, finished_todo_date DATETIME CHECK(finished_todo_date BETWEEN started_todo_date AND CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 /*
 start and finish may be in future. maybe smone wants to plan their todos. feel free
 calculate progress from start and finish date
@@ -114,10 +129,14 @@ calculate progress from start and finish date
 No, never seen him.
 */
 
---done | last committed
-create table reviewed_book (id_ref INTEGER, join_book INTEGER NOT NULL, join_acc INTEGER NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), first_impression text NOT NULL UNIQUE, order_rank INTEGER CHECK(order_rank >= 0), last_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(last_updated <= CURRENT_TIMESTAMP), PRIMARY KEY(id_ref ASC), FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE SET DEFAULT);
+--todo
 --template | to have fun with
-create table reviewed_book (id_ref INTEGER, join_book INTEGER NOT NULL, join_acc INTEGER NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), first_impression text NOT NULL UNIQUE, order_rank INTEGER CHECK(order_rank >= 0), last_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(last_updated <= CURRENT_TIMESTAMP), PRIMARY KEY(id_ref ASC), FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE SET DEFAULT);
+create table todo_reminder (id_ref INTEGER, join_user_todo INTEGER NOT NULL, title text DEFAULT 'UNTITLED', content text NOT NULL PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_user_todo) ON UPDATE CASCADE ON DELETE CASCADE)
+
+--done | last committed
+create table reviewed_book (id_ref INTEGER, join_book INTEGER NOT NULL, join_acc INTEGER NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), first_impression text NOT NULL UNIQUE, order_rank INTEGER CHECK(order_rank >= 0), last_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(last_updated <= CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE SET DEFAULT);
+--template | to have fun with
+create table reviewed_book (id_ref INTEGER, join_book INTEGER NOT NULL, join_acc INTEGER NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), first_impression text NOT NULL UNIQUE, order_rank INTEGER CHECK(order_rank >= 0), last_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(last_updated <= CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE SET DEFAULT);
 --comments
 create table reviewed_book (id_ref INTEGER, join_book INTEGER NOT NULL /*NOT UNIQUE!IMPORTANT!*/, join_acc INTEGER NOT NULL, created_at DATETIME /*yyyy-mm-dd:hh:mm:ss*/NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), first_impression text NOT NULL /*YES, NOT NULL! You will do a first impressino, if you want to or not!ALSO NOT CHANGABLE*/UNIQUE /*YES, UNIQUE! You get the rest.*/, order_rank /*UNSIGNED*/INTEGER /*NOT UNIQUE. We share*/ CHECK(order_rank >= 0), last_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(last_updated <= CURRENT_TIMESTAMP), FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE SET DEFAULT);
 
@@ -125,11 +144,11 @@ create table reviewed_book (id_ref INTEGER, join_book INTEGER NOT NULL /*NOT UNI
 --waiting
 
 --done | last committed
-create table book_read (id_ref INTEGER, join_reviewed_book INTEGER NOT NULL, started_read_date DATETIME NOT NULL CHECK(started_read_date <= CURRENT_TIMESTAMP), finished_read_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(finished_read_at <= CURRENT_TIMESTAMP), thoughts text, PRIMARY KEY(id_ref ASC), FOREIGN KEY (join_reviewed_book) REFERENCES reviewed_book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+create table book_read (id_ref INTEGER, join_reviewed_book INTEGER NOT NULL, started_read_date DATETIME NOT NULL CHECK(started_read_date <= CURRENT_TIMESTAMP), finished_read_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(finished_read_at <= CURRENT_TIMESTAMP), thoughts text, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_reviewed_book) REFERENCES reviewed_book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 --template | to have fun with (changes)
-create table book_read (id_ref INTEGER, join_reviewed_book INTEGER NOT NULL, started_read_date DATETIME NOT NULL CHECK(started_read_date <= CURRENT_TIMESTAMP), finished_read_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(finished_read_date <= CURRENT_TIMESTAMP), thoughts text, PRIMARY KEY(id_ref ASC), FOREIGN KEY (join_reviewed_book) REFERENCES reviewed_book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+create table book_read (id_ref INTEGER, join_reviewed_book INTEGER NOT NULL, started_read_date DATETIME NOT NULL CHECK(started_read_date <= CURRENT_TIMESTAMP), finished_read_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(finished_read_date <= CURRENT_TIMESTAMP), thoughts text, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_reviewed_book) REFERENCES reviewed_book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 --comments
-create table book_read (id_ref INTEGER, join_reviewed_book INTEGER NOT NULL, started_read_date DATETIME NOT NULL /*doen't have to be accurate*/ CHECK(started_read_date <= CURRENT_TIMESTAMP), finished_read_date DATETIME NOT NULL /*same goes here*/ DEFAULT CURRENT_TIMESTAMP CHECK(finished_read_date <= CURRENT_TIMESTAMP), thoughts text /*NULL*/, PRIMARY KEY(id_ref ASC), FOREIGN KEY (join_reviewed_book) REFERENCES reviewed_book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT /*should be CASCADE but could use to see stats. how often were which books read*/);
+create table book_read (id_ref INTEGER, join_reviewed_book INTEGER NOT NULL, started_read_date DATETIME NOT NULL /*doen't have to be accurate*/ CHECK(started_read_date <= CURRENT_TIMESTAMP), finished_read_date DATETIME NOT NULL /*same goes here*/ DEFAULT CURRENT_TIMESTAMP CHECK(finished_read_date <= CURRENT_TIMESTAMP), thoughts text /*NULL*/, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_reviewed_book) REFERENCES reviewed_book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT /*should be CASCADE but could use to see stats. how often were which books read*/);
 /*
 isbn + account.rowid machen auch einen primary key. CHECK?
 geht bei t-read auch ein foreign key nicht zu pm sondern zu isbn+a.rowid
@@ -138,11 +157,11 @@ in future todo:[db] link to this from quotes, excepts, and other stuff i would w
 */
 
 --done | last committed
-create table review (id_ref INTEGER, join_read INTEGER NOT NULL, join_book INTEGER NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), is_public INTEGER NOT NULL CHECK(is_public BETWEEN 0 AND 1), rating INTEGER NOT NULL CHECK(rating BETWEEN 0 AND 5), quicknote INTEGER NOT NULL CHECK(quicknote >= 0), title text NOT NULL, essay text NOT NULL, tldr text NOT NULL, last_edited DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(last_edited <= CURRENT_TIMESTAMP), PRIMARY KEY(id_ref ASC), FOREIGN KEY (join_read) REFERENCES book_read (id_ref) ON UPDATE CASCADE ON DELETE SET NULL, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+create table review (id_ref INTEGER, join_read INTEGER NOT NULL, join_book INTEGER NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), is_public INTEGER NOT NULL CHECK(is_public BETWEEN 0 AND 1), rating INTEGER NOT NULL CHECK(rating BETWEEN 0 AND 5), quicknote INTEGER NOT NULL CHECK(quicknote >= 0), title text NOT NULL, essay text NOT NULL, tldr text NOT NULL, last_edited DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(last_edited <= CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_read) REFERENCES book_read (id_ref) ON UPDATE CASCADE ON DELETE SET NULL, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 --template | to have fun with
-create table review (id_ref INTEGER, join_read INTEGER NOT NULL DEFAULT 1, join_book INTEGER NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), is_public INTEGER NOT NULL CHECK(is_public BETWEEN 0 AND 1), rating INTEGER NOT NULL CHECK(rating BETWEEN 0 AND 5), quicknote INTEGER NOT NULL CHECK(quicknote >= 0), title text NOT NULL, essay text NOT NULL, tldr text NOT NULL, last_edited DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(last_edited <= CURRENT_TIMESTAMP), PRIMARY KEY(id_ref ASC), FOREIGN KEY (join_read) REFERENCES book_read (id_ref) ON UPDATE CASCADE ON DELETE SET NULL, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+create table review (id_ref INTEGER, join_read INTEGER NOT NULL DEFAULT 1, join_book INTEGER NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), is_public INTEGER NOT NULL CHECK(is_public BETWEEN 0 AND 1), rating INTEGER NOT NULL CHECK(rating BETWEEN 0 AND 5), quicknote INTEGER NOT NULL CHECK(quicknote >= 0), title text NOT NULL, essay text NOT NULL, tldr text NOT NULL, last_edited DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(last_edited <= CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_read) REFERENCES book_read (id_ref) ON UPDATE CASCADE ON DELETE SET NULL, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 --comments
-create table review (id_ref INTEGER, join_read /*programatically defaults to last read for this user on this book. but if no read is set it is to anonymise the reviews and therefore is set to a collection (anonymous) read*/ INTEGER NOT NULL, join_book INTEGER NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), is_public INTEGER NOT NULL CHECK(is_public BETWEEN 0 AND 1), rating INTEGER NOT NULL CHECK(rating BETWEEN 0 AND 5) /*rating out of 5*/, quicknote /*UNSIGNED*/INTEGER NOT NULL CHECK(quicknote >= 0), title text NOT NULL, essay text /*maybe BLOB depending on nedded effeciency*/ NOT NULL, tldr text NOT NULL, last_edited DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(last_edited <= CURRENT_TIMESTAMP), PRIMARY KEY(id_ref ASC), FOREIGN KEY (join_read) REFERENCES book_read (id_ref) ON UPDATE CASCADE ON DELETE SET NULL/*if user is deleted, or information should be lost. Deleting reviewedbook is enough*/, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+create table review (id_ref INTEGER, join_read /*programatically defaults to last read for this user on this book. but if no read is set it is to anonymise the reviews and therefore is set to a collection (anonymous) read*/ INTEGER NOT NULL, join_book INTEGER NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), is_public INTEGER NOT NULL CHECK(is_public BETWEEN 0 AND 1), rating INTEGER NOT NULL CHECK(rating BETWEEN 0 AND 5) /*rating out of 5*/, quicknote /*UNSIGNED*/INTEGER NOT NULL CHECK(quicknote >= 0), title text NOT NULL, essay text /*maybe BLOB depending on nedded effeciency*/ NOT NULL, tldr text NOT NULL, last_edited DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(last_edited <= CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_read) REFERENCES book_read (id_ref) ON UPDATE CASCADE ON DELETE SET NULL/*if user is deleted, or information should be lost. Deleting reviewedbook is enough*/, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 /*
 I'd like to delete a read without deleting the reviews -> I need a way to reference the book. ALSO review is worthless without book
 -> rather reference Book directly, so user data is not connected and reviews can be anonymous.
@@ -151,6 +170,22 @@ the typical quicknote can be stored as an int, varchar would take up unneccessar
     enumerations are used in code, for the 'humans' to keep track.
 */
 
+--todo
+--template | to have fun with
+create table quote (id_ref INTEGER, join_read INTEGER NOT NULL DEFAULT 1, join_book INTEGER NOT NULL, content text, note text, chapter text, page_from INTEGER, page_to INTEGER, line_from INTEGER, line_to INTEGER, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), is_public INTEGER NOT NULL CHECK(is_public BETWEEN 0 AND 1));
+/*
+quotes können public oder private sein
+default ist private, aber wenn man welche public stellt, werden diese auf dem Profil angezeigt.
+Es ist wie ein Teil vom Steckbrief: 'My Quotes'
+check in code, that at least pages and lines, chapter and lines, or some combi and content is set. not all, but also not just any
+todo:[luxus] pages and chapter, have to be in book's bounds
+*/
 
+--todo
+--template | to have fun with
+create table marker (id_ref INTEGER, join_quote INTEGER NOT NULL, join_color INTEGER NOT NULL, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_quote) REFERENCES quote (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_color) REFERENCES marker_colors (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+/*
+needs own table to mark one quote with more than on color
+*/
 --VIEWS=============================================
 create view account_no_pw as select id_ref,login_name,email,last_login,last_logout,created_at from account;

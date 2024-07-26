@@ -49,7 +49,7 @@ app.get('/', (req, res) => {
   res.json({message: 'alive'});
 });
 
-app.use('/books', /*loginMW.youShallNotPass,*/ booksRouter);
+app.use('/books', loginMW.youShallNotPass, booksRouter);
 app.use('/account', accountsRouter);
 app.use('/dev', devRouter);
 

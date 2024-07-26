@@ -24,16 +24,27 @@ const createBookExtended = db.transaction((isbn,title,author,publisher) => {
     }
 }
 
-//GETTER (select)
+//GETTER (select) no account =====================
+export function checkBookUnique(isbn) {
+    return dbBooks.checkUnique(isbn);
+}
 export function getAuthorId(firstName, lastName) {
     return dbAuthor.getAuthorId(firstName,lastName);
 }
 export function getPublisherId(name) {
     return dbPublisher.getPublisherId(name);
 }
+//GETTER (select) account =================
+export function getReviewedForAcc(accId) {
+    return dbBooks.getReviewedForAcc(accId);
+  }
+  export function getTodoForAcc(accId) {
+    return dbBooks.getTodoForAcc(accId);
+  }
+
 //SETTER (update)
 
-//CREATOR (insert)
+//CREATOR (insert) ==================================
 //create book should start a transaction, since if there is no author or publisher, these will have to be created first.
 export function createNewAuthor(firstName,lastName) {
     // return tryInsert(dbAuthor.createNewEssens(firstName,lastName));

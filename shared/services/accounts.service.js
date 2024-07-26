@@ -45,7 +45,7 @@ export function loginAccount(login_name, password, authenticated, fail) {
 
     let login = false;
     const account = dbAccount.getAccount(login_name);
-    console.log('[AccS] login - acc: ', account);
+    console.log('[AccS] login - acc: ', {...account, pw_digest: null});
     //todo: maybe create seperate select with only relevent detail ..(login_name, 'login'|Selects.login)
     if (account) {
         const digest = account.pw_digest;
