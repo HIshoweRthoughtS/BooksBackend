@@ -1,9 +1,9 @@
 
 export function youShallNotPass(req, res, next) {
-    console.log('[BookMW] req received');
+    console.log('[BookMW] req received; body: ', req.body);
       if (!req.session.accId || !req.session.loginName) {
         console.log('[BooksMW] access denied');
-        res.json({info: 'fail', detail: 'you are not logged in!'}); //.status(401)
+        res.json({info: 'fail', detail: {summary: 'Access Denied', message: 'you are not logged in!'}}); //.status(401)
     } else {
       next();
     }
