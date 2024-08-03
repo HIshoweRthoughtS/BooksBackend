@@ -88,15 +88,6 @@ create table publisher (id_ref INTEGER, title text NOT NULL UNIQUE, country_of_o
 --template | to have fun with
 create table publisher (id_ref INTEGER, title text NOT NULL UNIQUE, country_of_origin text NOT NULL, hq_location text NOT NULL, PRIMARY KEY (id_ref ASC));
 
---done | last committed
-create table book (id_ref INTEGER, isbn text NOT NULL UNIQUE, join_author INTEGER NOT NULL, join_publisher INTEGER NOT NULL, title text NOT NULL, extended_title text, extra_info text, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_author) REFERENCES author (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_publisher) REFERENCES publisher (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
---template | to have fun with
-create table book (id_ref INTEGER, isbn text NOT NULL UNIQUE, join_author INTEGER NOT NULL, join_publisher INTEGER NOT NULL, title text NOT NULL, extended_title text, extra_info text, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_author) REFERENCES author (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_publisher) REFERENCES publisher (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
-/*
-todo: store some kind of restriction. Like banned books that are not allowed to be reviewd, although something like that is never a good thing and i cant think of a use case rn
-but age restriction maybe in a status 0001 -> fsk etc
-*/
-
 --todo
 create table marker_colors (id_ref INTEGER, color_name text NOT NULL, color_code INTEGER NOT NULL DEFAULT id_ref, meaning text NOT NULL, PRIMARY KEY (id_ref ASC));
 --template | to have fun with
@@ -110,8 +101,16 @@ blue = 3, meaning = 'external reference'
 purple = 4, meaning = 'personal relevance'
 pink = 5, meaning = 'high'
 */
-
 --=====================WITH FOREIGN KEYS=======================
+--done | last committed
+create table book (id_ref INTEGER, isbn text NOT NULL UNIQUE, join_author INTEGER NOT NULL, join_publisher INTEGER NOT NULL, title text NOT NULL, extended_title text, extra_info text, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_author) REFERENCES author (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_publisher) REFERENCES publisher (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+--template | to have fun with
+create table book (id_ref INTEGER, isbn text NOT NULL UNIQUE, join_author INTEGER NOT NULL, join_publisher INTEGER NOT NULL, title text NOT NULL, extended_title text, extra_info text, PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_author) REFERENCES author (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT, FOREIGN KEY (join_publisher) REFERENCES publisher (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+/*
+todo: store some kind of restriction. Like banned books that are not allowed to be reviewd, although something like that is never a good thing and i cant think of a use case rn
+but age restriction maybe in a status 0001 -> fsk etc
+*/
+
 --done | last committed
 create table user_todo_book (id_ref INTEGER, join_acc INTEGER NOT NULL, join_book INTEGER NOT NULL, order_rank INTEGER CHECK(order_rank >= 0), started_todo_date DATETIME, finished_todo_date DATETIME CHECK(finished_todo_date BETWEEN started_todo_date AND CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 --template | to have fun with

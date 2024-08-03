@@ -9,7 +9,7 @@ const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMu
 db.pragma('journal_mode = WAL');
 
 const createBookExtended = db.transaction((isbn,title,author,publisher) => {
-    const pubId = publisher.id > 0 ? publisher.id : dbPublisher.createNewEssens(publisher.name).lastInsertRowid;
+    const pubId = publisher.id > 0 ? publisher.id : dbPublisher.createNewEssens(publisher.title).lastInsertRowid;
     const authorId = author.id > 0 ? author.id : dbAuthor.createNewEssens(author.firstName, author.lastName).lastInsertRowid;
     dbBooks.createNewEssens(isbn,title,authorId,pubId);
 });
@@ -33,6 +33,9 @@ export function getAuthorId(firstName, lastName) {
 }
 export function getPublisherId(name) {
     return dbPublisher.getPublisherId(name);
+}
+export function getAllBooks() {
+    return dbBooks.getAllBooks();
 }
 //GETTER (select) account =================
 export function getReviewedForAcc(accId) {

@@ -10,4 +10,8 @@ const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMu
  * 
  * REVIEW
  * NOT NULL:    join_read, join_book, created_at (default), is_public, rating, quicknote, title, essay, tldr, last_edited (default)
+ * 
+ * QUOTE
+ * NOT NULL:    join_read, join_book, created_at (default), is_public
+ * 
  */

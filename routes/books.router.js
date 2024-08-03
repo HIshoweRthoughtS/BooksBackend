@@ -3,16 +3,29 @@ import * as bookService from '../shared/services/books.service.js';
 import express from 'express';
 const router = express.Router();
 
+/**Response Interface
+ * 
+interface ServerRes<T> {
+  info: ResponseCodes,
+  detail: T | ServerError
+}
+interface ServerError {
+  summary: string,
+  message: string,
+  //more soon
+}
+ */
+
 /* GET books listing. */
 //return all books (pagination?)
-router.get('/', function(req, res, next) {
+router.get('/', (req, res) => {
   //req.params -> sorting titiel authhor, etc
-  console.log('[GETALLBOOKS] req: ', req.params);
+  console.log('[GETALLBOOKS] req: ', req.query);
   try {
-    res.json(bookService.getAllBooks());
+    res.json({info: 'success', detail: bookService.getAllBooks()});
   } catch(err) {
     console.error(`Error while getting Books `, err.message);
-    next(err);
+    res.json({info:'fail', detail:{summary:'no books', message:'fail in all books'}});
   }
 });
 router.post('/', (req, res) => {
@@ -21,18 +34,18 @@ router.post('/', (req, res) => {
     res.json({info:'success', detail: 'Book created'});
   } else {
     //info:fail,detail:already exists so not quite fail
-    res.json({info:'fail', detail: 'Book not created'});
+    res.json({info:'fail', detail: {summary: 'Book not created', message: 'Nottin\' yet'}});
   }
 });
 
 router.get('/reviewed', (req, res) => {
   const reviewedBooks = bookService.getReviewedForAcc(req.session.accId);
-  res.json({info: 'success', detail: {login_name: req.session.login_name, reviewed_books: reviewedBooks}});
+  res.json({info: 'success', detail: {loginname: req.session.loginname, reviewed_books: reviewedBooks}});
 });
 
 router.get('/todo', (req, res) => {
   const todoBooks = bookService.getTodoForAcc(req.session.accId);
-  res.json({info: 'success', detail: {login_name: req.session.login_name, todo_books: todoBooks}});
+  res.json({info: 'success', detail: {loginname: req.session.loginname, todo_books: todoBooks}});
 });
 
 export default router;

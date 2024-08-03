@@ -8,26 +8,34 @@ const mySalt = 3;
 //todo: maybe use per user salt and store in db
 
 //async
-
-export function createAccount(login_name, password, mail, handleSuccess/*(acc.id)*/, handleFail/*(creationMsg)*/) {
+/**
+ * neccessaryInfo {
+ *  loginname
+ *  password
+ * }
+ * extraInfo {
+ *  email
+ * }
+ */
+export function createAccount(neccessaryInfo, handleSuccess/*(acc.id)*/, handleFail/*(creationMsg)*/) {
 
     handleFail = handleFail ? handleFail : console.log;
     //todo:create account object -> check unique
     //every information if an account can be created should be in sqlite.js (or some acc class)
     //so you just create an object with all you know, then you ask dbdriver, if obj can be inserted
     //respons tells you if it is possible, or what field is not unique [password exluded]
-    if (!dbAccount.checkUnique(login_name, mail)) {
+    if (!dbAccount.checkUnique(neccessaryInfo)) {
         handleFail(creationMsg.duplicate_other);
     } else {
-        bcrypt.hash(password, mySalt, (err, hash) => {
+        bcrypt.hash(neccessaryInfo.password, mySalt, (err, hash) => {
             console.log('[create Account] Bcrypt err: ', err, ' hash: ', hash ? 'hash':'no hash');
             if (err) {
                 handleFail('An error occured during password encryption. Aborted');
             }
             else {
                 try {
-                    const tmp = dbAccount.createNewAccount(login_name, hash, mail);
-                    // handleSuccess(dbAccount.getAccountId(login_name));
+                    const tmp = dbAccount.createNewAccount(neccessaryInfo.loginname, hash, mail);
+                    // handleSuccess(dbAccount.getAccountId(loginname));
                     handleSuccess(tmp.lastInsertRowid);
                 } catch (e) {
                     console.log('[accserv] insert e: ', e);
@@ -40,13 +48,13 @@ export function createAccount(login_name, password, mail, handleSuccess/*(acc.id
     //end of function
     //NO MORE LINES
 }
-export function loginAccount(login_name, password, authenticated, fail) {
+export function loginAccount(loginname, password, authenticated, fail) {
     fail = fail ? fail : console.log;
 
     let login = false;
-    const account = dbAccount.getAccount(login_name);
+    const account = dbAccount.getAccount(loginname);
     console.log('[AccS] login - acc: ', {...account, pw_digest: null});
-    //todo: maybe create seperate select with only relevent detail ..(login_name, 'login'|Selects.login)
+    //todo: maybe create seperate select with only relevent detail ..(loginname, 'login'|Selects.login)
     if (account) {
         const digest = account.pw_digest;
         bcrypt.compare(password, digest, (err, res) => {
@@ -78,7 +86,7 @@ export function loginAccount(login_name, password, authenticated, fail) {
 //sync
 // const hash = bcrypt.hashSync('my password', 'my salt');
 //Store hash password to DB
-function pwMatchAcc(login_name, password) {
-    const digest = dbAccount.getAccount(login_name).pw_digest;
+function pwMatchAcc(loginname, password) {
+    const digest = dbAccount.getAccount(loginname).pw_digest;
     return bcrypt.compareSync(password, digest); //true || false
 }
