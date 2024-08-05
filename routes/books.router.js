@@ -38,14 +38,17 @@ router.post('/', (req, res) => {
   }
 });
 
-router.get('/reviewed', (req, res) => {
-  const reviewedBooks = bookService.getReviewedForAcc(req.session.accId);
-  res.json({info: 'success', detail: {loginname: req.session.loginname, reviewed_books: reviewedBooks}});
-});
-
 router.get('/todo', (req, res) => {
   const todoBooks = bookService.getTodoForAcc(req.session.accId);
   res.json({info: 'success', detail: {loginname: req.session.loginname, todo_books: todoBooks}});
+});
+router.post('/todo', (req, res) => {
+  
+});
+
+router.get('/reviewed', (req, res) => {
+  const reviewedBooks = bookService.getReviewedForAcc(req.session.accId);
+  res.json({info: 'success', detail: {loginname: req.session.loginname, reviewed_books: reviewedBooks}});
 });
 
 export default router;

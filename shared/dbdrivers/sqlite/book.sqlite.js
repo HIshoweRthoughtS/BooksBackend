@@ -23,7 +23,8 @@ const insertNewEssential = db.prepare("INSERT INTO book (isbn,join_author,join_p
 const selectUniqueConstrainsStmt = db.prepare("SELECT * FROM book WHERE id_ref = @row OR isbn = @isbn;");
 
 //todo: refactor in view
-const selectAllBooks = db.prepare("SELECT b.isbn,b.title,a.first_name,a.last_name,p.title as pub_title FROM book as b JOIN author a on a.id_ref = b.join_author JOIN publisher p on p.id_ref = b.join_publisher;");
+const selectAllBooks = db.prepare("SELECT * FROM book;");
+const selectAllBooksShallowJoin = db.prepare("SELECT b.*,a.first_name as a_first, a.last_name as a_last, p.title as p_title FROM book as b JOIN author a on a.id_ref = b.join_author JOIN publisher p on p.id_ref = b.join_publisher;");
 const selectReviewdForAcc = db.prepare("SELECT * FROM reviewed_book WHERE join_acc = ?;");
 const selectTodoForAcc = db.prepare("SELECT * FROM user_todo_book WHERE join_acc = ?;");
 
@@ -42,8 +43,11 @@ export function createNewEssens(isbn, title, autorid, pubid) {
 //todo:
 function createNewFull() {}
 
-export function getAllBooks() {
+function getAllBooks() {
   return selectAllBooks.all();
+}
+export function getAllDispalayInfo() {
+  return selectAllBooksShallowJoin.all();
 }
 export function getReviewedForAcc(acc_id) {
   return selectReviewdForAcc.all(parseInt(acc_id));

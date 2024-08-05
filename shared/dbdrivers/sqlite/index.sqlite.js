@@ -35,7 +35,7 @@ export function getPublisherId(name) {
     return dbPublisher.getPublisherId(name);
 }
 export function getAllBooks() {
-    return dbBooks.getAllBooks();
+    return dbBooks.getAllDispalayInfo();
 }
 //GETTER (select) account =================
 export function getReviewedForAcc(accId) {
