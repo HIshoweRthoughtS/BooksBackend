@@ -1,3 +1,5 @@
 
 /node_modules
-#/db only when it gets too big
+/db
+!/db/sqlite3/schematablecreation.sql
+!/db/sqlite3/history.sql
