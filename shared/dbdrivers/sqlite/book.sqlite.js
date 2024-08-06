@@ -19,6 +19,7 @@ const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMu
 
 //Prepared Statements
 const insertNewEssential = db.prepare("INSERT INTO book (isbn,join_author,join_publisher,title) VALUES (@isbn,@autorid,@pubid,@title);");
+const insertNewTodo = db.prepare("INSERT INTO user_todo_book (join_acc,join_book,order_rank,started_todo_date) VALUES (@account,@book,0,@start);");
 
 const selectUniqueConstrainsStmt = db.prepare("SELECT * FROM book WHERE id_ref = @row OR isbn = @isbn;");
 
@@ -54,4 +55,8 @@ export function getReviewedForAcc(acc_id) {
 }
 export function getTodoForAcc(acc_id) {
   return selectTodoForAcc.all(parseInt(acc_id));
+}
+
+export function createNewTodo(account, book, start) {
+  return insertNewTodo({account, book, start});
 }

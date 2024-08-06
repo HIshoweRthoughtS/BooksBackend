@@ -113,10 +113,10 @@ but age restriction maybe in a status 0001 -> fsk etc
 
 --done | last committed
 create table user_todo_book (id_ref INTEGER, join_acc INTEGER NOT NULL, join_book INTEGER NOT NULL, order_rank INTEGER CHECK(order_rank >= 0), started_todo_date DATETIME, finished_todo_date DATETIME CHECK(finished_todo_date BETWEEN started_todo_date AND CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
---template | to have fun with
-create table user_todo_book (id_ref INTEGER, join_acc INTEGER NOT NULL, join_book INTEGER NOT NULL, order_rank INTEGER CHECK(order_rank >= 0), started_todo_date DATETIME, finished_todo_date DATETIME CHECK(finished_todo_date BETWEEN started_todo_date AND CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+--template | to have fun with*
+create table user_todo_book (id_ref INTEGER, join_acc INTEGER NOT NULL, join_book INTEGER NOT NULL, order_rank INTEGER CHECK(order_rank >= 0) DEFAULT 0, started_todo_date DATETIME, finished_todo_date DATETIME CHECK(finished_todo_date BETWEEN started_todo_date AND CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 --comments
-create table user_todo_book (id_ref INTEGER, join_acc INTEGER NOT NULL, join_book INTEGER NOT NULL, order_rank INTEGER CHECK(order_rank >= 0), started_todo_date DATETIME /*NULL*/ /*NO DEFAULT*/, finished_todo_date DATETIME CHECK(finished_todo_date BETWEEN started_todo_date AND CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+create table user_todo_book (id_ref INTEGER, join_acc INTEGER NOT NULL, join_book INTEGER NOT NULL, order_rank INTEGER CHECK(order_rank >= 0) DEFAULT 0, started_todo_date DATETIME /*NULL*/ /*NO DEFAULT*/, finished_todo_date DATETIME CHECK(finished_todo_date BETWEEN started_todo_date AND CURRENT_TIMESTAMP), PRIMARY KEY (id_ref ASC), FOREIGN KEY (join_acc) REFERENCES account (id_ref) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (join_book) REFERENCES book (id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 /*
 start and finish may be in future. maybe smone wants to plan their todos. feel free
 calculate progress from start and finish date

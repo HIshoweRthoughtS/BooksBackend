@@ -15,10 +15,13 @@ const createBookExtended = db.transaction((isbn,title,author,publisher) => {
 });
 
 //private execution helper
-/*noexport*/function tryInsert(createFunction) {
+/*noexport*/function tryInsert(createFunction, ...args) {
     let success = false;
     try {
-        createFunction();
+        /**
+         * es wird die 
+         */
+        createFunction.apply(null, args);
     } catch (e) {
         console.log('[Idxsql] create - error: ', e);
     }
@@ -50,15 +53,15 @@ export function getReviewedForAcc(accId) {
 //CREATOR (insert) ==================================
 //create book should start a transaction, since if there is no author or publisher, these will have to be created first.
 export function createNewAuthor(firstName,lastName) {
-    // return tryInsert(dbAuthor.createNewEssens(firstName,lastName));
-    let success = false;
-    try {
-        dbAuthor.createNewEssens(firstName,lastName);
-        success = true
-    } catch (e) {
-        console.log('[Idxsql] createauthor - error: ', e);
-    }
-    return success;
+    return tryInsert(dbAuthor.createNewEssens,firstName,lastName);
+    // let success = false;
+    // try {
+    //     dbAuthor.createNewEssens(firstName,lastName);
+    //     success = true
+    // } catch (e) {
+    //     console.log('[Idxsql] createauthor - error: ', e);
+    // }
+    // return success;
 }
 export function createNewPublisher(title/*, countryOfOrigin, hqLocation*/) {
     let success = false;
@@ -77,6 +80,17 @@ export function createBook(isbn,title,author,publisher) {
         success = true;
     } catch (e) {
         console.log('[Idxsql] createbookext - error: ', e);
+    }
+    return success;
+}
+
+export function createTodo(accId, bookId, startDate) {
+    let success = false;
+    try {
+        dbBooks.createTodo(accId, bookId, startDate);
+        success = true;
+    } catch {
+        console.log('[Idxsql] createtodo - error: ', e);
     }
     return success;
 }
