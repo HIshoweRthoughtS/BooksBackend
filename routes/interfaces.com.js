@@ -19,4 +19,8 @@ interface ServerError {
     message: string,
     //more soon
 }
+ServerError.summary {
+??? -> not logged in maybe access denied
+Not created -> DB Error
+}
 */

@@ -14,17 +14,22 @@ const createBookExtended = db.transaction((isbn,title,author,publisher) => {
     dbBooks.createNewEssens(isbn,title,authorId,pubId);
 });
 
+const moveTodo2Reviewed = db.transaction((todoId, reviewedBookId, startDate, finishDate, thoughts, quicknote) => {
+    const removeRet = dbBooks.deleteTodo(todoId);
+    const createRet = dbBooks.createNewRead(reviewedBookId, startDate, finishDate, thoughts, quicknote);
+    console.log(`Remove: ${removeRet}\nCreate: ${createRet}`);
+});
+
 //private execution helper
 /*noexport*/function tryInsert(createFunction, ...args) {
     let success = false;
     try {
-        /**
-         * es wird die 
-         */
         createFunction.apply(null, args);
+        success = true;
     } catch (e) {
         console.log('[Idxsql] create - error: ', e);
     }
+    return success;
 }
 
 //GETTER (select) no account =====================
@@ -41,12 +46,24 @@ export function getAllBooks() {
     return dbBooks.getAllDispalayInfo();
 }
 //GETTER (select) account =================
+export function checkUserTodoUniue(accId, bookId) {
+    return dbBooks.checkUserTodoUniue(accId, bookId);
+}
+export function checkReviewedUnique(accId, bookId) {
+    return dbBooks.checkReviewedUnique(accId, bookId);
+}
+export function checkReadsInRange(reviewedBookId, startDate, finishDate) {
+    return dbBooks.checkReadsInRange(reviewedBookId,startDate,finishDate);
+}
 export function getReviewedForAcc(accId) {
     return dbBooks.getReviewedForAcc(accId);
-  }
-  export function getTodoForAcc(accId) {
+}
+export function getTodoForAcc(accId) {
     return dbBooks.getTodoForAcc(accId);
-  }
+}
+export function getReviewedId(accId, bookId) {
+    return dbBooks.getReviewedId(bookId, accId);
+}
 
 //SETTER (update)
 
@@ -54,43 +71,33 @@ export function getReviewedForAcc(accId) {
 //create book should start a transaction, since if there is no author or publisher, these will have to be created first.
 export function createNewAuthor(firstName,lastName) {
     return tryInsert(dbAuthor.createNewEssens,firstName,lastName);
+}
+export function createNewPublisher(title/*, countryOfOrigin, hqLocation*/) {
+    return tryInsert(dbPublisher.createNewEssens, title);
+}
+export function createBook(isbn,title,author,publisher) {
+    createBookExtended(isbn,title,author,publisher);
+    // return tryInsert(createBookExtended, isbn,title,author,publisher)
     // let success = false;
     // try {
-    //     dbAuthor.createNewEssens(firstName,lastName);
-    //     success = true
+    //     createBookExtended(isbn,title,author,publisher);
+    //     success = true;
     // } catch (e) {
-    //     console.log('[Idxsql] createauthor - error: ', e);
+    //     console.log('[Idxsql] createbookext - error: ', e);
     // }
     // return success;
 }
-export function createNewPublisher(title/*, countryOfOrigin, hqLocation*/) {
-    let success = false;
-    try {
-        dbPublisher.createNewEssens(title);
-        success = true
-    } catch (e) {
-        console.log('[Idxsql] createauthor - error: ', e);
-    }
-    return success;
-}
-export function createBook(isbn,title,author,publisher) {
-    let success = false;
-    try {
-        createBookExtended(isbn,title,author,publisher);
-        success = true;
-    } catch (e) {
-        console.log('[Idxsql] createbookext - error: ', e);
-    }
-    return success;
-}
 
 export function createTodo(accId, bookId, startDate) {
-    let success = false;
-    try {
-        dbBooks.createTodo(accId, bookId, startDate);
-        success = true;
-    } catch {
-        console.log('[Idxsql] createtodo - error: ', e);
-    }
-    return success;
+    return tryInsert(dbBooks.createNewTodo,accId, bookId, startDate);
+}
+export function createReviewed(accId, bookId) {
+    return tryInsert(dbBooks.createNewReviewed, accId, bookId);
+}
+export function createRead(reviewedBookId, startDate, finishDate, thoughts, quicknote) {
+    return tryInsert(dbBooks.createNewRead, reviewedBookId, startDate, finishDate, thoughts, quicknote);
+}
+
+export function moveTodoReviewed(todoId, reviewedBookId, startDate, finishDate, thoughts, quicknote) {
+    moveTodo2Reviewed(todoId, reviewedBookId, startDate, finishDate, thoughts, quicknote);
 }

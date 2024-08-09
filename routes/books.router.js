@@ -21,6 +21,7 @@ interface ServerError {
 router.get('/', (req, res) => {
   //req.params -> sorting titiel authhor, etc
   console.log('[GETALLBOOKS] req: ', req.query);
+  //how can you tell this was the first function?
   try {
     res.json({info: 'success', detail: bookService.getAllBooks()});
   } catch(err) {
@@ -40,15 +41,31 @@ router.post('/', (req, res) => {
 
 router.get('/todo', (req, res) => {
   const todoBooks = bookService.getTodoForAcc(req.session.accId);
-  res.json({info: 'success', detail: {loginname: req.session.loginname, todo_books: todoBooks}});
+  res.json({info: 'success', detail: todoBooks});
 });
 router.post('/todo', (req, res) => {
-  
+  const success = bookService.createTodoFromBody(req.session.accId, req.body);
+  if (success) {
+    res.json({info:'success', detail: 'Todo created for: ' + req.session.loginname});
+  }
+  else {
+    res.json({info:'fail', detail: {summary: 'Not created', message: 'There was an error creating this todo. Maybe exists already. Only on book in todo per user'}});
+  }
 });
 
 router.get('/reviewed', (req, res) => {
   const reviewedBooks = bookService.getReviewedForAcc(req.session.accId);
   res.json({info: 'success', detail: {loginname: req.session.loginname, reviewed_books: reviewedBooks}});
+});
+
+router.post('/read', (req, res) => {
+  const success = bookService.addReadFromBody(req.session.accId, req.body);
+  if (success) {
+    res.json({info:'success', detail: 'Created Read I think'});
+  }
+  else {
+    res.json({info:'fail', detail:{summary:'Not created', message:'complicated maybe transaction fail'}});
+  }
 });
 
 export default router;

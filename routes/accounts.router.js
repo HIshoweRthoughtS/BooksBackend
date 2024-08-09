@@ -5,8 +5,8 @@ import express from 'express';
 const router = express.Router();
 //==================End of imports=====================================
 router.get('/', (req, res) => {
-    if (req.session && req.session.accId && req.session.loginName) {
-        res.json({info: 'success', detail: {loginname: req.session.loginName}});
+    if (req.session && req.session.accId && req.session.loginname) {
+        res.json({info: 'success', detail: {loginname: req.session.loginname}});
     }
     else {
         res.json({info:'fail', detail:{summary: 'Not Logged in', message:'No session cookie set'}});
