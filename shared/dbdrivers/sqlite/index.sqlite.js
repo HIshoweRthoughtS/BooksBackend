@@ -21,10 +21,10 @@ const moveTodo2Reviewed = db.transaction((todoId, reviewedBookId, startDate, fin
 });
 
 //private execution helper
-/*noexport*/function tryInsert(createFunction, ...args) {
+/*noexport*/function tryDryExecute(execFunc, ...args) {
     let success = false;
     try {
-        createFunction.apply(null, args);
+        execFunc.apply(null, args);
         success = true;
     } catch (e) {
         console.log('[Idxsql] create - error: ', e);
@@ -69,18 +69,24 @@ export function getReaedId(reviewedBook, startDate) {
 }
 
 //SETTER (update)
+export function setTodoLastPage(todoId, lastPage) {
+    return tryDryExecute(dbBooks.setTodoLastPage, todoId, lastPage);
+}
+export function setTodoCurrentPage(todoId, currentPage) {
+    return tryDryExecute(dbBooks.setTodoCurrentPage, todoId, currentPage);
+}
 
 //CREATOR (insert) ==================================
 //create book should start a transaction, since if there is no author or publisher, these will have to be created first.
 export function createNewAuthor(firstName,lastName) {
-    return tryInsert(dbAuthor.createNewEssens,firstName,lastName);
+    return tryDryExecute(dbAuthor.createNewEssens,firstName,lastName);
 }
 export function createNewPublisher(title/*, countryOfOrigin, hqLocation*/) {
-    return tryInsert(dbPublisher.createNewEssens, title);
+    return tryDryExecute(dbPublisher.createNewEssens, title);
 }
 export function createBook(isbn,title,author,publisher) {
     createBookExtended(isbn,title,author,publisher);
-    // return tryInsert(createBookExtended, isbn,title,author,publisher)
+    // return tryDryExecute(createBookExtended, isbn,title,author,publisher)
     // let success = false;
     // try {
     //     createBookExtended(isbn,title,author,publisher);
@@ -92,19 +98,19 @@ export function createBook(isbn,title,author,publisher) {
 }
 
 export function createTodo(accId, bookId, startDate) {
-    return tryInsert(dbBooks.createNewTodo,accId, bookId, startDate);
+    return tryDryExecute(dbBooks.createNewTodo,accId, bookId, startDate);
 }
 export function createReviewed(accId, bookId) {
-    return tryInsert(dbBooks.createNewReviewed, accId, bookId);
+    return tryDryExecute(dbBooks.createNewReviewed, accId, bookId);
 }
 export function createRead(reviewedBookId, startDate, finishDate, thoughts, quicknote) {
-    return tryInsert(dbBooks.createNewRead, reviewedBookId, startDate, finishDate, thoughts, quicknote);
+    return tryDryExecute(dbBooks.createNewRead, reviewedBookId, startDate, finishDate, thoughts, quicknote);
 }
 export function createReview(readId,bookId,isPublic,rating,title,essay,tldr) {
-    return tryInsert(dbBooks.createNewReview, readId,bookId,isPublic,rating,title,essay,tldr);
+    return tryDryExecute(dbBooks.createNewReview, readId,bookId,isPublic,rating,title,essay,tldr);
 }
 export function createQuote(readId,bookId,content,note,chapter,pageFrom,pageTo,lineFrom,lineTo,isPublic) {
-    return tryInsert(dbBooks.createNewQuote, readId,bookId,content,note,chapter,pageFrom,pageTo,lineFrom,lineTo,isPublic);
+    return tryDryExecute(dbBooks.createNewQuote, readId,bookId,content,note,chapter,pageFrom,pageTo,lineFrom,lineTo,isPublic);
 }
 
 export function moveTodoReviewed(todoId, reviewedBookId, startDate, finishDate, thoughts, quicknote) {

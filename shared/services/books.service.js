@@ -11,6 +11,23 @@ export function getTodoForAcc(accId) {
     return dbHandler.getTodoForAcc(accId);
 }
 
+export function setTodoPagesFromBody(body) {
+    let success = false;
+    if (body.last_page) {
+        success = setTodoLastPage(body.todo_id, body.last_page);
+    }
+    if (null !== body.current_page) {
+        success = setTodoCurrentPage(body.todo_id, body.current_page);
+    }
+    return success;
+}
+function setTodoLastPage(todoId, lastPage) {
+    return dbHandler.setTodoLastPage(todoId, lastPage);
+}
+function setTodoCurrentPage(todoId, currentPage) {
+    return dbHandler.setTodoCurrentPage(todoId, currentPage);
+}
+
 export function createBookFromBody(body) {
     return createBook(body.isbn, body.title, body.author, body.publisher);
 }

@@ -52,6 +52,15 @@ router.post('/todo', (req, res) => {
     res.json({info:'fail', detail: {summary: 'Not created', message: 'There was an error creating this todo. Maybe exists already. Only on book in todo per user'}});
   }
 });
+router.put('/todo', (req, res) => {
+  const success = bookService.setTodoPagesFromBody(req.body);
+  if (success) {
+    res.json({info:'success', detail: 'pages changed'});
+  }
+  else {
+    res.json({info:'fail', detail: {summary:'Not Updated', message:'Pech gehabt'}});
+  }
+});
 
 router.get('/reviewed', (req, res) => {
   const reviewedBooks = bookService.getReviewedForAcc(req.session.accId);

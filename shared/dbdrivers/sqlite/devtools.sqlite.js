@@ -19,3 +19,19 @@ export function deleteAll() {
         delete from account;
         `));
 }
+export function dropAll() {
+    console.log(db.exec(`
+        drop table marker;
+        drop table review;
+        drop table quote;
+        drop table book_read;
+        drop table reviewed_book;
+        drop table todo_reminder
+        drop table user_todo_book;
+        drop table book;
+        drop table marker_colors;
+        drop table publisher;
+        drop table author;
+        drop table account;
+        `));
+}

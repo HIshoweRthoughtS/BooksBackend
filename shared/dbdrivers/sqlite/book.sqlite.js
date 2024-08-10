@@ -28,6 +28,9 @@ const insertNewRead = db.prepare("INSERT INTO book_read (join_reviewed_book,star
 const insertNewReview = db.prepare("INSERT INTO review (join_read,join_book,is_public,rating,title,essay,tldr) VALUES (@readId,@bookId,@isPublic,@rating,@title,@essay,@tldr);");
 const insertNewQuote = db.prepare("INSERT INTO quote (join_read,join_book,content,note,chapter,page_from,page_to,line_from,line_to,is_public) VALUES (@readId,@bookId,@content,@note,@chapter,@pageFrom,@pageTo,@lineFrom,@lineTo,@isPublic);");
 
+const updateTodoLastPage = db.prepare("UPDATE user_todo_book SET last_page = @lastPage WHERE id_ref = @todoId;");
+const updateTodoCurrentPage = db.prepare("UPDATE user_todo_book SET current_page = @currentPage WHERE id_ref = @todoId;");
+
 const selectUniqueConstrainsStmt = db.prepare("SELECT * FROM book WHERE id_ref = @row OR isbn = @isbn;");
 const selectUniqueUserTodo = db.prepare("SELECT * FROM user_todo_book WHERE join_acc = @accId AND join_book = @bookId");
 const selectUniqueReviewed = db.prepare("SELECT * FROM reviewed_book WHERE join_acc = @accId AND join_book = @bookId");
@@ -93,6 +96,13 @@ export function getReaedId(reviewedBook, startDate) {
   const id = selectReadId.get({reviewedBook, startDate});
   selectReadId.pluck(false);
   return id;
+}
+
+export function setTodoLastPage(todoId, lastPage) {
+  return updateTodoLastPage.run({todoId, lastPage})
+}
+export function setTodoCurrentPage(todoId, currentPage) {
+  return updateTodoCurrentPage.run({todoId, currentPage});
 }
 
 export function deleteTodo(todoId) {
