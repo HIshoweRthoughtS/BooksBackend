@@ -67,5 +67,8 @@ router.post('/read', (req, res) => {
     res.json({info:'fail', detail:{summary:'Not created', message:'complicated maybe transaction fail'}});
   }
 });
+// router.post('/read/review', (req, res) => {
+//   const success = bookService.addReview()
+// });
 
 export default router;

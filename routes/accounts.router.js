@@ -12,15 +12,6 @@ router.get('/', (req, res) => {
         res.json({info:'fail', detail:{summary: 'Not Logged in', message:'No session cookie set'}});
     }
 });
-router.post('/', (req, res) => {
-    //todo: validate req.body
-    //create neccessary and in future extra info objects from input or return validation error
-    accService.createAccount(
-        {...req.body},
-        (id) => res/*.status(200)*/.json({info: 'success', user_id: id}),
-        (msg) => res/*.status(500)*/.json({info: 'fail', detail: msg})
-    );
-});
 
 router.get('/logout', (req, res) => {
     if (req.session) {

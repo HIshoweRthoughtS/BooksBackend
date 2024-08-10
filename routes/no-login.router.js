@@ -17,5 +17,14 @@ router.post('/', (req, res) => {
         (error) => res.json({info: 'fail', detail: error}) 
     );
 });
+router.post('/new', (req, res) => {
+    //todo: validate req.body
+    //create neccessary and in future extra info objects from input or return validation error
+    accService.createAccount(
+        {...req.body},
+        (id) => res/*.status(200)*/.json({info: 'success', user_id: id}),
+        (msg) => res/*.status(500)*/.json({info: 'fail', detail: msg})
+    );
+});
 
 export default router;

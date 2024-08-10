@@ -15,8 +15,8 @@ const createBookExtended = db.transaction((isbn,title,author,publisher) => {
 });
 
 const moveTodo2Reviewed = db.transaction((todoId, reviewedBookId, startDate, finishDate, thoughts, quicknote) => {
-    const removeRet = dbBooks.deleteTodo(todoId);
     const createRet = dbBooks.createNewRead(reviewedBookId, startDate, finishDate, thoughts, quicknote);
+    const removeRet = dbBooks.deleteTodo(todoId);
     console.log(`Remove: ${removeRet}\nCreate: ${createRet}`);
 });
 
@@ -64,6 +64,9 @@ export function getTodoForAcc(accId) {
 export function getReviewedId(accId, bookId) {
     return dbBooks.getReviewedId(bookId, accId);
 }
+export function getReaedId(reviewedBook, startDate) {
+    return dbBooks.getReaedId(reviewedBook, startDate);
+}
 
 //SETTER (update)
 
@@ -96,6 +99,12 @@ export function createReviewed(accId, bookId) {
 }
 export function createRead(reviewedBookId, startDate, finishDate, thoughts, quicknote) {
     return tryInsert(dbBooks.createNewRead, reviewedBookId, startDate, finishDate, thoughts, quicknote);
+}
+export function createReview(readId,bookId,isPublic,rating,title,essay,tldr) {
+    return tryInsert(dbBooks.createNewReview, readId,bookId,isPublic,rating,title,essay,tldr);
+}
+export function createQuote(readId,bookId,content,note,chapter,pageFrom,pageTo,lineFrom,lineTo,isPublic) {
+    return tryInsert(dbBooks.createNewQuote, readId,bookId,content,note,chapter,pageFrom,pageTo,lineFrom,lineTo,isPublic);
 }
 
 export function moveTodoReviewed(todoId, reviewedBookId, startDate, finishDate, thoughts, quicknote) {

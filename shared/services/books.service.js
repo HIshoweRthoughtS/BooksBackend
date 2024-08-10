@@ -47,7 +47,7 @@ export function addReadFromBody(accId, body) {
         }
     }
     const reviewedId = dbHandler.getReviewedId(accId, body.book_id_ref);
-    if (null != body.remove_todo_id) {
+    if (reviewedId > 0 && null != body.remove_todo_id) {
         success = true;
         //transaction remove todo and create read
         dbHandler.moveTodoReviewed(
@@ -59,7 +59,7 @@ export function addReadFromBody(accId, body) {
             body.quicknote
         );
     }
-    else {
+    else if (reviewedId > 0) {
         success = dbHandler.createRead(
             reviewedId,
             body.started_read_date,
@@ -68,5 +68,36 @@ export function addReadFromBody(accId, body) {
             body.quicknote
         );
     }
+    if (success) {
+        addReviewsFromBody(reviewedId, body);
+        addQuotesFromBody(reviewedId, body);
+    }
     return success;
+}
+function addReviewsFromBody(reviewedId, body) {
+    const readId = dbHandler.getReaedId(reviewedId, body.started_read_date);
+    let sRev = false;
+    body.reviews.forEach(review => {
+        //todo: log every insert, that fails
+        sRev = addReview(readId, body.book_id_ref, review.is_public,review.rating,review.title,review.essay,review.tldr); 
+    });
+    if (!sRev) {
+        console.warn('[BookS] add read - At least one review insert failed');
+    }
+}
+function addReview(readId,bookId,isPublic,rating,title,essay,tldr) {
+    return dbHandler.createReview(readId,bookId,isPublic,rating,title,essay,tldr);
+}
+function addQuotesFromBody(reviewedId, body) {
+    const readId = dbHandler.getReaedId(reviewedId, body.started_read_date);
+    let sQuote = false;
+    body.quotes.forEach(quote => {
+        sQuote = addQuote(readId, body.book_id_ref, quote.content,quote.note,quote.chapter,quote.page_from,quote.page_to,quote.line_from,quote.line_to,quote.is_public)
+    });
+    if (!sQuote) {
+        console.warn('[BookS] add read - At least one quote insert failed');
+    }
+}
+function addQuote(readId,bookId,content,note,chapter,pageFrom,pageTo,lineFrom,lineTo,isPublic) {
+    return dbHandler.createQuote(readId,bookId,content,note,chapter,pageFrom,pageTo,lineFrom,lineTo,isPublic);
 }
