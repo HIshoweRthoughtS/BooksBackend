@@ -85,16 +85,12 @@ export function createNewPublisher(title/*, countryOfOrigin, hqLocation*/) {
     return tryDryExecute(dbPublisher.createNewEssens, title);
 }
 export function createBook(isbn,title,author,publisher) {
+    let success = false;
     createBookExtended(isbn,title,author,publisher);
-    // return tryDryExecute(createBookExtended, isbn,title,author,publisher)
-    // let success = false;
-    // try {
-    //     createBookExtended(isbn,title,author,publisher);
-    //     success = true;
-    // } catch (e) {
-    //     console.log('[Idxsql] createbookext - error: ', e);
-    // }
-    // return success;
+    if (!dbBooks.checkUnique(isbn)) {
+        success = true;
+    }
+    return success;
 }
 
 export function createTodo(accId, bookId, startDate) {

@@ -11,7 +11,7 @@ const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMu
 //Prepared Statements
 const insertNewEssential = db.prepare("INSERT INTO publisher (title, country_of_origin, hq_location) VALUES (@name, 'N/A', 'N/A');");
 
-const selectUniqueConstrainsStmt = db.prepare("SELECT * FROM publisher WHERE id_ref = @row OR title = @name;");
+const selectUniqueConstrainsStmt = db.prepare("SELECT * FROM publisher WHERE pub_id_ref = @row OR title = @name;");
 const selectPublisherStmt = db.prepare("SELECT * FROM publisher WHERE title = @name;");
 
 //checks all unique constraints

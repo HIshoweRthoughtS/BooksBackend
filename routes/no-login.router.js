@@ -8,10 +8,10 @@ const router = express.Router();
 router.post('/', (req, res) => {
     accService.loginAccount(req.body.loginname, req.body.password,
         (user_info) => {
-            req.session.accId = user_info.id_ref;
+            req.session.accId = user_info.a_id_ref;
             req.session.loginname = user_info.loginname;
-            console.log(req.session);
-            console.log(req.session.id);
+            // console.log(req.session);
+            // console.log(req.session.id);
             res.status(200).json({info: 'success', detail: user_info});
         },
         (error) => res.json({info: 'fail', detail: error}) 

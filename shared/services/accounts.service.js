@@ -64,7 +64,7 @@ export function loginAccount(loginname, password, authenticated, fail) {
                 console.log('login - result: ', res);
                 if(res) {
                     login = true;
-                    dbAccount.changeLogin(account.id_ref);
+                    dbAccount.changeLogin(account.a_id_ref);
                     console.log('login - Updated last in');
                     console.log('login - comper suc');
                     authenticated({...account, pw_digest: null});

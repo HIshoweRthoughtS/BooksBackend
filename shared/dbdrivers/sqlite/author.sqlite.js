@@ -11,7 +11,7 @@ const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMu
 //Prepared Statements
 const insertNewEssential = db.prepare("INSERT INTO author (first_name,last_name) VALUES (@firstname, @lastname);");
 
-const selectUniqueConstrainsStmt = db.prepare("SELECT * FROM author WHERE id_ref = @row OR (first_name = @firstname AND last_name = @lastname);");
+const selectUniqueConstrainsStmt = db.prepare("SELECT * FROM author WHERE au_id_ref = @row OR (first_name = @firstname AND last_name = @lastname);");
 const selectAuthorStmt = db.prepare("SELECT * FROM author WHERE  first_name = @firstname AND last_name = @lastname;");
 
 //todo: first + last name is not really unique

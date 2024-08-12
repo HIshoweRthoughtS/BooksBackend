@@ -26,12 +26,14 @@ export function dropAll() {
         drop table quote;
         drop table book_read;
         drop table reviewed_book;
-        drop table todo_reminder
+        drop table todo_reminder;
         drop table user_todo_book;
         drop table book;
         drop table marker_colors;
         drop table publisher;
         drop table author;
         drop table account;
+
+        drop view account_no_pw;
         `));
 }

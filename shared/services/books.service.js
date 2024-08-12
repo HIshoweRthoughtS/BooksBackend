@@ -49,21 +49,21 @@ function createBook(isbn,title,authorObj,publisherObj) {
 
 export function createTodoFromBody(accId, body) {
     let success = false;
-    if (dbHandler.checkUserTodoUniue(accId, body.book.id_ref)) {
-        success = dbHandler.createTodo(accId, body.book.id_ref, body.start_date);
+    if (dbHandler.checkUserTodoUniue(accId, body.book.b_id_ref)) {
+        success = dbHandler.createTodo(accId, body.book.b_id_ref, body.start_date);
     }
     return success;
 }
 export function addReadFromBody(accId, body) {
     let success = false;
-    if (dbHandler.checkReviewedUnique(accId,body.book_id_ref)) {
-        const created = dbHandler.createReviewed(accId, body.book_id_ref);
+    if (dbHandler.checkReviewedUnique(accId,body.b_id_ref)) {
+        const created = dbHandler.createReviewed(accId, body.b_id_ref);
         //todo:[opt] what is this? please make it better
         if (!created) {
             return created;
         }
     }
-    const reviewedId = dbHandler.getReviewedId(accId, body.book_id_ref);
+    const reviewedId = dbHandler.getReviewedId(accId, body.b_id_ref);
     if (reviewedId > 0 && null != body.remove_todo_id) {
         success = true;
         //transaction remove todo and create read
@@ -96,7 +96,7 @@ function addReviewsFromBody(reviewedId, body) {
     let sRev = false;
     body.reviews.forEach(review => {
         //todo: log every insert, that fails
-        sRev = addReview(readId, body.book_id_ref, review.is_public,review.rating,review.title,review.essay,review.tldr); 
+        sRev = addReview(readId, body.b_id_ref, review.is_public,review.rating,review.title,review.essay,review.tldr); 
     });
     if (!sRev) {
         console.warn('[BookS] add read - At least one review insert failed');
@@ -109,7 +109,7 @@ function addQuotesFromBody(reviewedId, body) {
     const readId = dbHandler.getReaedId(reviewedId, body.started_read_date);
     let sQuote = false;
     body.quotes.forEach(quote => {
-        sQuote = addQuote(readId, body.book_id_ref, quote.content,quote.note,quote.chapter,quote.page_from,quote.page_to,quote.line_from,quote.line_to,quote.is_public)
+        sQuote = addQuote(readId, body.b_id_ref, quote.content,quote.note,quote.chapter,quote.page_from,quote.page_to,quote.line_from,quote.line_to,quote.is_public)
     });
     if (!sQuote) {
         console.warn('[BookS] add read - At least one quote insert failed');

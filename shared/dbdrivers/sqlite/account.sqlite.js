@@ -13,16 +13,16 @@ const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMu
 const insertNewEssential = db.prepare("INSERT INTO account (loginname, pw_digest) VALUES (@loginname, @pw);");
 const insertAccountStmt = db.prepare("INSERT INTO account (loginname, pw_digest, email) VALUES (@name, @pw, @mail);")
 
-const updateAccountLoginStmt = db.prepare("UPDATE account SET last_login = CURRENT_TIMESTAMP WHERE id_ref = ?")
-const updateAccountLogoutStmt = db.prepare("UPDATE account SET last_logout = CURRENT_TIMESTAMP WHERE id_ref = ?")
+const updateAccountLoginStmt = db.prepare("UPDATE account SET last_login = CURRENT_TIMESTAMP WHERE a_id_ref = ?")
+const updateAccountLogoutStmt = db.prepare("UPDATE account SET last_logout = CURRENT_TIMESTAMP WHERE a_id_ref = ?")
 
-const updateAccountEmailStmt = db.prepare("UPDATE account SET email = @mail WHERE id_ref = @id")
+const updateAccountEmailStmt = db.prepare("UPDATE account SET email = @mail WHERE a_id_ref = @id")
 
 //todo: fix back
-const selectUniqueConstrainsStmt = db.prepare("SELECT * FROM account_no_pw WHERE id_ref = @row OR loginname = @loginname;")
+const selectUniqueConstrainsStmt = db.prepare("SELECT * FROM account_no_pw WHERE a_id_ref = @row OR loginname = @loginname;")
 
 const selectAccountByNameStmt = db.prepare("SELECT * FROM account WHERE loginname = ?;");
-const selectAccountByIdStmt = db.prepare("SELECT * FROM account_no_pw WHERE id_ref = ?;");
+const selectAccountByIdStmt = db.prepare("SELECT * FROM account_no_pw WHERE a_id_ref = ?;");
 
 //Pre..stmt wrapper
 // i like it but no use now
@@ -59,7 +59,7 @@ export function getAccountById(acc_id) {
 }
 //throwerror
 export function changeLogin(acc_id) {
-    console.log(updateAccountLoginStmt.run(acc_id));
+    updateAccountLoginStmt.run(acc_id);
 }
 //throwerror
 export function changeLogout(acc_id) {
