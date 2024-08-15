@@ -1,6 +1,7 @@
 
 //3rd Party
 import Database from 'better-sqlite3';
+import { Logger } from '../../services/logger.service.js';
 const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMustExist:true });
 
 /**
@@ -17,7 +18,7 @@ const selectPublisherStmt = db.prepare("SELECT * FROM publisher WHERE title = @n
 //checks all unique constraints
 export function checkUnique(name) {
     const rows = selectUniqueConstrainsStmt.all({row: -1,name:name});
-    console.log('[pubsql] checkUniq - rows: ', rows);
+    Logger.getLogger().add(`CheckUnique: ${rows}`, 1, 'pubsql');
     return rows.length > 0 ? false:true;
 }
 //creates new row with only not nullable columns (bare minimum)
@@ -28,13 +29,13 @@ export function createNewEssens(name) {
 }
 function getPublisher(name) {
   const row = selectPublisherStmt.get({name});
-  console.log('[pubsql] getauthor - row: ', row);
+    Logger.getLogger().add(`GetPub: ${row}`, 1, 'pubsql');
   return row;
 }
 export function getPublisherId(name) {
     selectPublisherStmt.pluck();
     const rowId = getPublisher(name);
     selectPublisherStmt.pluck(false);
-  console.log('[pubsql] getid - id: ', rowId);
+    Logger.getLogger().add(`GetPubId: ${rowId}`, 1, 'pubsql');
     return rowId ? rowId : -1;
 }

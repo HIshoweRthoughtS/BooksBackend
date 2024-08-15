@@ -1,6 +1,7 @@
 
 //3rd Party
 import Database from 'better-sqlite3';
+import { Logger } from '../../services/logger.service.js';
 const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMustExist:true });
 
 /**
@@ -18,7 +19,7 @@ const selectAuthorStmt = db.prepare("SELECT * FROM author WHERE  first_name = @f
 //checks all unique constraints
 export function checkUnique(firstname, lastname) {
     const rows = selectUniqueConstrainsStmt.all({row: -1,firstname,lastname});
-    console.log('[Authorsql] checkUniq - rows: ', rows);
+    Logger.getLogger().add(`CheckUnique: ${rows}`, 1, 'authorsql');
     //if already exist -> ret false, else ret true
     return rows.length > 0 ? false:true;
 }
@@ -31,7 +32,7 @@ export function createNewEssens(firstname, lastname) {
 
 function getAuthor(firstname, lastname) {
   const row = selectAuthorStmt.get({firstname,lastname});
-  console.log('[Authorsql] getauthor - row: ', row);
+  Logger.getLogger().add(`GetAuthor: ${row}`, 1, 'authorsql');
   return row;
 }
 
@@ -41,6 +42,6 @@ export function getAuthorId(firstname, lastname) {
   selectAuthorStmt.pluck();
   const rowId = getAuthor(firstname,lastname);
   selectAuthorStmt.pluck(false);
-  console.log('[Authorsql] getid - id: ', rowId);
+  Logger.getLogger().add(`GetAuthorId: ${rowId}`, 1, 'authorsql');
   return rowId ? rowId : -1;
 }

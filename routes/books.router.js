@@ -1,4 +1,5 @@
 import * as bookService from '../shared/services/books.service.js';
+import { Logger } from '../shared/services/logger.service.js';
 
 import express from 'express';
 const router = express.Router();
@@ -20,7 +21,7 @@ interface ServerError {
 //return all books (pagination?)
 router.get('/', (req, res) => {
   //req.params -> sorting titiel authhor, etc
-  console.log('[GETALLBOOKS] req: ', req.query);
+  
   //how can you tell this was the first function?
   try {
     res.json({info: 'success', detail: bookService.getAllBooks()});

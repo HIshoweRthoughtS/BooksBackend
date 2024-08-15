@@ -1,6 +1,8 @@
 import * as dbBooks from './book.sqlite.js';
 import * as dbAuthor from './author.sqlite.js';
 import * as dbPublisher from './publisher.sqlite.js';
+
+import { Logger } from '../../services/logger.service.js';
 //todo:[next] fassade for acc,book,author etc. then use transaction, rollback, and commit befor creating book, because it is perfect test
 
 //3rd Party
@@ -17,7 +19,7 @@ const createBookExtended = db.transaction((isbn,title,author,publisher) => {
 const moveTodo2Reviewed = db.transaction((todoId, reviewedBookId, startDate, finishDate, thoughts, quicknote) => {
     const createRet = dbBooks.createNewRead(reviewedBookId, startDate, finishDate, thoughts, quicknote);
     const removeRet = dbBooks.deleteTodo(todoId);
-    console.log(`Remove: ${removeRet}\nCreate: ${createRet}`);
+    Logger.getLogger().add(`MoveTodo: remove ${removeRet} || Create ${createRet}`, 1, 'indexsqlite');
 });
 
 //private execution helper
@@ -27,7 +29,7 @@ const moveTodo2Reviewed = db.transaction((todoId, reviewedBookId, startDate, fin
         execFunc.apply(null, args);
         success = true;
     } catch (e) {
-        console.log('[Idxsql] create - error: ', e);
+    Logger.getLogger().add(`ExecError: ${e}`, 4, 'indexsqlite');
     }
     return success;
 }

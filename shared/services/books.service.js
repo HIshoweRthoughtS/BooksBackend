@@ -1,4 +1,5 @@
 import * as dbHandler from '../dbdrivers/sqlite/index.sqlite.js'
+import { Logger } from './logger.service.js';
 
 export function getAllBooks(sort) {
     return dbHandler.getAllBooks();
@@ -37,11 +38,11 @@ function createBook(isbn,title,authorObj,publisherObj) {
     let success = false;
     if (!dbHandler.checkBookUnique(isbn)) {
         //ret already exists
-        console.log('[BookS] createbook - already exists!');
+        Logger.getLogger().add('Book already exists', 3, 'BookS');
     } else {
         const authorId = dbHandler.getAuthorId(authorObj.firstName, authorObj.lastName);
         const pubId = dbHandler.getPublisherId(publisherObj.title);
-        console.log('[BookS] createbook - autorid: ', authorId, ' pubid: ', pubId);
+        Logger.getLogger().add(`Created! AuthId: ${authorId} || PubId: ${pubId}`, 1, 'BookS');
         success = dbHandler.createBook(isbn,title, {id: authorId, ...authorObj}, {id: pubId,...publisherObj});
     }
     return success;

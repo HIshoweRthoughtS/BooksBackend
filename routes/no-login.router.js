@@ -10,8 +10,6 @@ router.post('/', (req, res) => {
         (user_info) => {
             req.session.accId = user_info.a_id_ref;
             req.session.loginname = user_info.loginname;
-            // console.log(req.session);
-            // console.log(req.session.id);
             res.status(200).json({info: 'success', detail: user_info});
         },
         (error) => res.json({info: 'fail', detail: error}) 
