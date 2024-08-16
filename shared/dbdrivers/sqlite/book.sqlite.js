@@ -19,20 +19,18 @@ const db = new Database('db/sqlite3/BookList.db', { verbose: console.log, fileMu
 const shallowBookSelector = 'b.*,a.first_name as a_first, a.last_name as a_last, p.title as p_title';
 
 //Prepared Statements
-const removeTodo = db.prepare("DELETE FROM user_todo_book WHERE t_id_ref = @todoId;");
 const insertNewEssential = db.prepare("INSERT INTO book (isbn,join_author,join_publisher,title) VALUES (@isbn,@autorid,@pubid,@title);");
-const insertNewTodo = db.prepare("INSERT INTO user_todo_book (join_acc,join_book,order_rank,started_todo_date) VALUES (@account,@book,0,@start);");
-//todo:get first impression from frontend
 const insertNewReviewed = db.prepare("INSERT INTO reviewed_book (join_book,join_acc,first_impression) VALUES (@bookId, @accId, 'nice');");
-const insertNewRead = db.prepare("INSERT INTO book_read (join_reviewed_book,started_read_date,finished_read_date,thoughts,quicknote) VALUES (@reviewedBookId,@startDate,@finishDate,@thoughts,@qn);");
+const insertNewTodo = db.prepare("INSERT INTO book_read (join_reviewed_book,started_read_date,current_page) VALUES (@reviewedBookId,@startDate,@currentPage);");
+const insertNewRead = db.prepare("INSERT INTO book_read (join_reviewed_book,started_read_date,current_page,finished_read_date,thoughts,quicknote) VALUES (@reviewedBookId,@startDate,-1,@finishDate,@thoughts,@qn);");
 const insertNewReview = db.prepare("INSERT INTO review (join_read,join_book,is_public,rating,title,essay,tldr) VALUES (@readId,@bookId,@isPublic,@rating,@title,@essay,@tldr);");
 const insertNewQuote = db.prepare("INSERT INTO quote (join_read,join_book,content,note,chapter,page_from,page_to,line_from,line_to,is_public) VALUES (@readId,@bookId,@content,@note,@chapter,@pageFrom,@pageTo,@lineFrom,@lineTo,@isPublic);");
 
-const updateTodoLastPage = db.prepare("UPDATE user_todo_book SET last_page = @lastPage WHERE t_id_ref = @todoId;");
-const updateTodoCurrentPage = db.prepare("UPDATE user_todo_book SET current_page = @currentPage WHERE t_id_ref = @todoId;");
+const updateBookLastPage = db.prepare("UPDATE book SET pages = @lastPage WHERE b_id_ref = @bookId;");
+const updateTodoCurrentPage = db.prepare("UPDATE book_read SET current_page = @currentPage WHERE re_id_ref = @todoId;");
 
 const selectUniqueConstrainsStmt = db.prepare("SELECT * FROM book WHERE b_id_ref = @row OR isbn = @isbn;");
-const selectUniqueUserTodo = db.prepare("SELECT * FROM user_todo_book WHERE join_acc = @accId AND join_book = @bookId");
+const selectUniqueUserTodo = db.prepare("SELECT * FROM book_read br JOIN reviewed_book rv ON rv.rv_id_ref = br.join_reviewed_book WHERE rv.join_acc = @accId AND join_book = @bookId AND (br.finished_read_date IS NULL OR br.current_page > -1);");
 const selectUniqueReviewed = db.prepare("SELECT * FROM reviewed_book WHERE join_acc = @accId AND join_book = @bookId");
 //reads cannot overlap (start-finish, then new read. No start-start-finish-finish)
 const selectReadsInRange = db.prepare("SELECT * FROM book_read WHERE join_reviewed_book = @reviewedBookId AND (started_read_date < @startDate AND finished_read_date > @startDate) OR (started_read_date < @finishDate AND finished_read_date > @finishDate);");
@@ -41,7 +39,7 @@ const selectReadsInRange = db.prepare("SELECT * FROM book_read WHERE join_review
 const selectAllBooks = db.prepare("SELECT * FROM book;");
 const selectBookId = db.prepare("SELECT b_id_ref FROM book WHERE isbn = ?;");
 const selectAllBooksShallowJoin = db.prepare(`SELECT ${shallowBookSelector} FROM book as b JOIN author a on a.au_id_ref = b.join_author JOIN publisher p on p.pub_id_ref = b.join_publisher;`);
-const selectTodoForAcc = db.prepare(`SELECT t.*,${shallowBookSelector} FROM user_todo_book as t JOIN book b on b.b_id_ref = t.join_book JOIN author a on a.au_id_ref = b.join_author JOIN publisher p on p.pub_id_ref = b.join_publisher WHERE join_acc = ?;`);
+const selectTodoForAcc = db.prepare(`SELECT ${shallowBookSelector},r.started_read_date,r.finished_read_date FROM book_read as r JOIN reviewed_book rv on rv.rv_id_ref = r.join_reviewed_book JOIN book b on b.b_id_ref = rv.join_book JOIN author a on a.au_id_ref = b.join_author JOIN publisher p on p.pub_id_ref = b.join_publisher WHERE join_acc = ? AND finished_read_date IS NULL;`);
 const selectReviewdForAcc = db.prepare("SELECT * FROM reviewed_book WHERE join_acc = ?;");
 const selectReviewedId = db.prepare("SELECT rv_id_ref FROM reviewed_book WHERE join_book = @bookId AND join_acc = @accId;");
 const selectReadId = db.prepare("SELECT re_id_ref FROM book_read WHERE join_reviewed_book = @reviewedBook AND started_read_date = @startDate;");
@@ -103,8 +101,8 @@ export function getReaedId(reviewedBook, startDate) {
   return id;
 }
 
-export function setTodoLastPage(todoId, lastPage) {
-  return updateTodoLastPage.run({todoId, lastPage})
+export function setBookLastPage(bookId, lastPage) {
+  return updateBookLastPage.run({bookId, lastPage})
 }
 export function setTodoCurrentPage(todoId, currentPage) {
   return updateTodoCurrentPage.run({todoId, currentPage});
@@ -114,8 +112,8 @@ export function deleteTodo(todoId) {
   return removeTodo.run({todoId});
 }
 
-export function createNewTodo(account, book, start) {
-  return insertNewTodo.run({account, book, start});
+export function createNewTodo(reviewedBookId,startDate,currentPage) {
+  return insertNewTodo.run({reviewedBookId,startDate,currentPage});
 }
 export function createNewReviewed(accId, bookId) {
   return insertNewReviewed.run({accId, bookId});

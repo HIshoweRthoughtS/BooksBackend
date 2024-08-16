@@ -16,12 +16,6 @@ const createBookExtended = db.transaction((isbn,title,author,publisher) => {
     dbBooks.createNewEssens(isbn,title,authorId,pubId);
 });
 
-const moveTodo2Reviewed = db.transaction((todoId, reviewedBookId, startDate, finishDate, thoughts, quicknote) => {
-    const createRet = dbBooks.createNewRead(reviewedBookId, startDate, finishDate, thoughts, quicknote);
-    const removeRet = dbBooks.deleteTodo(todoId);
-    Logger.getLogger().add(`MoveTodo: remove ${removeRet} || Create ${createRet}`, 1, 'indexsqlite');
-});
-
 //private execution helper
 /*noexport*/function tryDryExecute(execFunc, ...args) {
     let success = false;
@@ -71,8 +65,8 @@ export function getReaedId(reviewedBook, startDate) {
 }
 
 //SETTER (update)
-export function setTodoLastPage(todoId, lastPage) {
-    return tryDryExecute(dbBooks.setTodoLastPage, todoId, lastPage);
+export function setBookLastPage(bookId, lastPage) {
+    return tryDryExecute(dbBooks.setBookLastPage, bookId, lastPage);
 }
 export function setTodoCurrentPage(todoId, currentPage) {
     return tryDryExecute(dbBooks.setTodoCurrentPage, todoId, currentPage);
@@ -95,11 +89,11 @@ export function createBook(isbn,title,author,publisher) {
     return success;
 }
 
-export function createTodo(accId, bookId, startDate) {
-    return tryDryExecute(dbBooks.createNewTodo,accId, bookId, startDate);
-}
 export function createReviewed(accId, bookId) {
     return tryDryExecute(dbBooks.createNewReviewed, accId, bookId);
+}
+export function createTodo(reviewedBookId,startDate,currentPage) {
+    return tryDryExecute(dbBooks.createNewTodo,reviewedBookId,startDate,currentPage);
 }
 export function createRead(reviewedBookId, startDate, finishDate, thoughts, quicknote) {
     return tryDryExecute(dbBooks.createNewRead, reviewedBookId, startDate, finishDate, thoughts, quicknote);

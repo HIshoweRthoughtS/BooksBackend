@@ -11,7 +11,6 @@ export function deleteAll() {
         delete from book_read;
         delete from reviewed_book;
         delete from todo_reminder
-        delete from user_todo_book;
         delete from book;
         delete from marker_colors;
         delete from publisher;
@@ -27,7 +26,6 @@ export function dropAll() {
         drop table book_read;
         drop table reviewed_book;
         drop table todo_reminder;
-        drop table user_todo_book;
         drop table book;
         drop table marker_colors;
         drop table publisher;

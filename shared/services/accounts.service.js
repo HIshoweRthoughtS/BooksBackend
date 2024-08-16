@@ -60,7 +60,7 @@ export function loginAccount(loginname, password, authenticated, fail) {
                 if(res) {
                     login = true;
                     dbAccount.changeLogin(account.a_id_ref);
-                    Logger.getLogger().add('last login time updated123456789012345678901234567890123456789012345678901234567#890123456789012345678901234567890###09876543210987654321098765432109876543#210987654321', 1, 'AccS');
+                    Logger.getLogger().add('last login time', 1, 'AccS');
                     authenticated({...account, pw_digest: null});
                 } else {
                     fail('name or password incorrect');

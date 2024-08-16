@@ -1,16 +1,23 @@
-import booksRouter from './routes/books.router.js';
+//Buchentsafter
+//router imports [in order of useage]
+import noLoginRouter from './routes/no-login.router.js';
 import accountsRouter from './routes/accounts.router.js';
 import devRouter from './routes/dev.router.js';
-import noLoginRouter from './routes/no-login.router.js'
 
-import { Logger } from './shared/services/logger.service.js';
+import generalRouter /*o7*/ from './routes/no-user.router.js'
+import userRouter from './routes/user.router.js';
 
-import { loggerClosure } from './shared/middleware/logger.middleware.js';
+//middleware imports
+import { initLogger } from './shared/middleware/logger.middleware.js';
 import * as loginMW from './shared/middleware/login.middleware.js';
+
+//model imports
+import { SuccessResponse } from './shared/models/ServerResponse.js';
 
 //3rd Party
 import express from 'express';
 const app = express();
+
 import session from 'express-session';
 app.use(session({
   secret: 'hundiwauwau',
@@ -40,18 +47,31 @@ const port = 3000 || process.env.PORT;
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.use(loggerClosure);
+//set up and start logging service. Also register to res.finish event
+app.use(initLogger);
 
 
-app.get('/', (req, res) => {
-  res.json({message: 'alive'});
+app.get('/', (_, res) => {
+  res.json(new SuccessResponse('alive'));
 });
 
-app.use('/login', noLoginRouter);
+app.get('/ip', (req, res) => {
+  res.json(new SuccessResponse({ip: req.ip}));
+});
 
-app.use('/books', loginMW.youShallNotPass, booksRouter);
+//set up and more misc in theese routers
+//###############################
+app.use('/login', noLoginRouter);
 app.use('/account', loginMW.youShallNotPass, accountsRouter);
+
 app.use('/dev', loginMW.youShallNotPass, devRouter);
+//###############################
+
+//business logic in this router
+//###############################
+app.use('/general', generalRouter /*o7*/);
+app.use('/:userId', userRouter);
+//###############################
 
 app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`);

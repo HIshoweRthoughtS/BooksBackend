@@ -15,15 +15,16 @@ export function getTodoForAcc(accId) {
 export function setTodoPagesFromBody(body) {
     let success = false;
     if (body.last_page) {
-        success = setTodoLastPage(body.todo_id, body.last_page);
+        console.log(body);
+        success = setBookLastPage(body.todo_id, body.last_page);
     }
     if (null !== body.current_page) {
         success = setTodoCurrentPage(body.todo_id, body.current_page);
     }
     return success;
 }
-function setTodoLastPage(todoId, lastPage) {
-    return dbHandler.setTodoLastPage(todoId, lastPage);
+function setBookLastPage(bookId, lastPage) {
+    return dbHandler.setBookLastPage(bookId, lastPage);
 }
 function setTodoCurrentPage(todoId, currentPage) {
     return dbHandler.setTodoCurrentPage(todoId, currentPage);
@@ -48,50 +49,50 @@ function createBook(isbn,title,authorObj,publisherObj) {
     return success;
 }
 
-export function createTodoFromBody(accId, body) {
+export function addReviewedChildFromBody(accId,body) {
+    let success = false;
+    if (dbHandler.checkReviewedUnique(accId,body.b_id_ref)) {
+
+        success = dbHandler.createReviewed(accId, body.b_id_ref);
+        //todo:[opt] what is this? please make it better
+    }
+    //if success === false this line should not return a valid value anyway
+    const reviewedId = dbHandler.getReviewedId(accId, body.b_id_ref);
+    if (reviewedId > 0) {
+
+        if (null !== body.finished_read_date) {
+            success = addReadFromBody(accId, body);
+        }
+        else {
+            success = addTodoFromBody(accId, body);
+        }
+        if (success) {
+            addReviewsFromBody(reviewedId, body);
+            addQuotesFromBody(reviewedId, body);
+        }
+
+    }
+    return success;
+}
+
+function addTodoFromBody(body) {
     let success = false;
     if (dbHandler.checkUserTodoUniue(accId, body.book.b_id_ref)) {
         success = dbHandler.createTodo(accId, body.book.b_id_ref, body.start_date);
     }
     return success;
 }
-export function addReadFromBody(accId, body) {
-    let success = false;
-    if (dbHandler.checkReviewedUnique(accId,body.b_id_ref)) {
-        const created = dbHandler.createReviewed(accId, body.b_id_ref);
-        //todo:[opt] what is this? please make it better
-        if (!created) {
-            return created;
-        }
-    }
-    const reviewedId = dbHandler.getReviewedId(accId, body.b_id_ref);
-    if (reviewedId > 0 && null != body.remove_todo_id) {
-        success = true;
-        //transaction remove todo and create read
-        dbHandler.moveTodoReviewed(
-            body.remove_todo_id,
-            reviewedId,
-            body.started_read_date,
-            body.finished_read_date,
-            body.thoughts,
-            body.quicknote
-        );
-    }
-    else if (reviewedId > 0) {
-        success = dbHandler.createRead(
-            reviewedId,
-            body.started_read_date,
-            body.finished_read_date,
-            body.thoughts,
-            body.quicknote
-        );
-    }
-    if (success) {
-        addReviewsFromBody(reviewedId, body);
-        addQuotesFromBody(reviewedId, body);
-    }
+function addReadFromBody(reviewedId, body) {
+    let success = dbHandler.createRead(
+        reviewedId,
+        body.started_read_date,
+        body.finished_read_date,
+        body.thoughts,
+        body.quicknote
+    );
     return success;
 }
+
 function addReviewsFromBody(reviewedId, body) {
     const readId = dbHandler.getReaedId(reviewedId, body.started_read_date);
     let sRev = false;
@@ -106,6 +107,7 @@ function addReviewsFromBody(reviewedId, body) {
 function addReview(readId,bookId,isPublic,rating,title,essay,tldr) {
     return dbHandler.createReview(readId,bookId,isPublic,rating,title,essay,tldr);
 }
+
 function addQuotesFromBody(reviewedId, body) {
     const readId = dbHandler.getReaedId(reviewedId, body.started_read_date);
     let sQuote = false;

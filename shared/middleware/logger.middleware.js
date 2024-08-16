@@ -1,6 +1,6 @@
 import { Logger } from "../services/logger.service.js";
 
-export function loggerClosure(req, res, next) {
+export function initLogger(req, res, next) {
         const logger = Logger.getLogger();
         console.log('\n', new Date(), ' - ', 'Request Received');
         logger.add(`Path: ${req.path}`, 2, 'request');
