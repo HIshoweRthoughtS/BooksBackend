@@ -42,8 +42,8 @@ export function getAllBooks() {
     return dbBooks.getAllDispalayInfo();
 }
 //GETTER (select) account =================
-export function checkUserTodoUniue(accId, bookId) {
-    return dbBooks.checkUserTodoUniue(accId, bookId);
+export function checkUserTodoUniue(reviewedId) {
+    return dbBooks.checkUserTodoUniue(reviewedId);
 }
 export function checkReviewedUnique(accId, bookId) {
     return dbBooks.checkReviewedUnique(accId, bookId);
@@ -68,8 +68,12 @@ export function getReaedId(reviewedBook, startDate) {
 export function setBookLastPage(bookId, lastPage) {
     return tryDryExecute(dbBooks.setBookLastPage, bookId, lastPage);
 }
-export function setTodoCurrentPage(todoId, currentPage) {
-    return tryDryExecute(dbBooks.setTodoCurrentPage, todoId, currentPage);
+export function setBookLastChapter(bookId, lastChapter) {
+    return tryDryExecute(dbBooks.setBookLastChapter, bookId, lastChapter);
+}
+
+export function setTodoCurrentPage(readId, currentPage) {
+    return tryDryExecute(dbBooks.setTodoCurrentPage, readId, currentPage);
 }
 
 //CREATOR (insert) ==================================
@@ -92,8 +96,8 @@ export function createBook(isbn,title,author,publisher) {
 export function createReviewed(accId, bookId) {
     return tryDryExecute(dbBooks.createNewReviewed, accId, bookId);
 }
-export function createTodo(reviewedBookId,startDate,currentPage) {
-    return tryDryExecute(dbBooks.createNewTodo,reviewedBookId,startDate,currentPage);
+export function createTodo(reviewedBookId,startDate) {
+    return tryDryExecute(dbBooks.createNewTodo,reviewedBookId,startDate);
 }
 export function createRead(reviewedBookId, startDate, finishDate, thoughts, quicknote) {
     return tryDryExecute(dbBooks.createNewRead, reviewedBookId, startDate, finishDate, thoughts, quicknote);

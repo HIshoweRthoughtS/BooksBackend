@@ -10,7 +10,7 @@ const router = express.Router({mergeParams: false});
 
 router.get('/', (req, res) => {
     if (req.session && req.session.accId && req.session.loginname) {
-        res.json(new SuccessResponse({loginname: req.session.loginname}));
+        res.json(new SuccessResponse({a_id_ref: req.session.accId, loginname: req.session.loginname, }));
     }
     else {
         res.json(new GetError('No session cookie set'));

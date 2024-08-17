@@ -37,9 +37,8 @@ router.post('/books', (req, res) => {
     }
 });
 
-router.patch('/books/:id', (req, res) => {
-    const bookId = req.params[id];
-    const success = bookService.setBookLastPage(bookId, req.body.last_page);
+router.patch('/books/:bookId', (req, res) => {
+    const success = bookService.setPagesAndChapterFromBody(req.params.bookId, req.body);
     if (success) {
         res.json(new SuccessResponse('patched'))
     }

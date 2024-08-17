@@ -1,6 +1,9 @@
 //:userId/books/todos
 //service imports
 import * as bookService from '../shared/services/books.service.js';
+//model imports
+import { SuccessResponse } from '../shared/models/ServerResponse.js';
+import { PatchError, PostError } from '../shared/models/ServerError.js';
 
 //3rd party
 import express from 'express';
@@ -8,25 +11,25 @@ const router = express.Router({mergeParams: true});
 //============End of Imports===================
 
 router.get('/', (req, res) => {
-    const todoBooks = bookService.getTodoForAcc(req.session.accId);
-    res.json({info: 'success', detail: todoBooks});
+    const todoBooks = bookService.getTodoForAcc(req.params.userId);
+    res.json(new SuccessResponse(todoBooks));
 });
 router.post('/', (req, res) => {
-    const success = bookService.addReviewedChildFromBody(req.session.accId, req.body);
+    const success = bookService.addReviewedChildFromBody(req.params.userId, req.body);
     if (success) {
-        res.json({info:'success', detail: 'Todo created for: ' + req.session.loginname});
+        res.json(new SuccessResponse(`Todo created. Session name: ${req.session.loginname}`));
     }
     else {
-        res.json({info:'fail', detail: {summary: 'Not created', message: 'There was an error creating this todo. Maybe exists already. Only on book in todo per user'}});
+        res.json(new PostError('There was an error creating this todo. Maybe exists already. Only on book in todo per '));
     }
 });
-router.put('/', (req, res) => {
-    const success = bookService.setTodoPagesFromBody(req.body);
+router.patch('/:todoId', (req, res) => {
+    const success = bookService.setTodoPagesFromBody(req.params.todoId, req.body);
     if (success) {
-        res.json({info:'success', detail: 'pages changed'});
+        res.json(new SuccessResponse('pages (and chapter) changed'));
     }
     else {
-        res.json({info:'fail', detail: {summary:'Not Updated', message:'Pech gehabt'}});
+        res.json(new PatchError('Pech gehabt'));
     }
 });
 
