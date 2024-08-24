@@ -145,8 +145,8 @@ create table todo_context (tr_id_ref INTEGER, join_reviewed_book INTEGER NOT NUL
 
 --done | last committed
 create table book_read (re_id_ref INTEGER, join_reviewed_book INTEGER NOT NULL, started_read_date DATETIME NOT NULL CHECK(started_read_date <= CURRENT_TIMESTAMP), finished_read_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(finished_read_date <= CURRENT_TIMESTAMP), thoughts text, quicknote text NOT NULL CHECK(quicknote >= 0), PRIMARY KEY (re_id_ref ASC), FOREIGN KEY (join_reviewed_book) REFERENCES reviewed_book (rv_id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
---template | to have fun with*(mac done)
-create table book_read (re_id_ref INTEGER, join_reviewed_book INTEGER NOT NULL, started_read_date DATETIME, current_page INTEGER DEFAULT 0 CHECK(current_page >= -1), finished_read_date DATETIME, thoughts text, quicknote text CHECK(quicknote >= 0), PRIMARY KEY (re_id_ref ASC), FOREIGN KEY (join_reviewed_book) REFERENCES reviewed_book (rv_id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+--template | to have fun with*
+create table book_read (re_id_ref INTEGER, join_reviewed_book INTEGER NOT NULL, started_read_date DATETIME, current_page INTEGER DEFAULT NULL CHECK(current_page >= 0), finished_read_date DATETIME, thoughts text, quicknote text CHECK(quicknote >= 0), PRIMARY KEY (re_id_ref ASC), FOREIGN KEY (join_reviewed_book) REFERENCES reviewed_book (rv_id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 --comments
 create table book_read (re_id_ref INTEGER, join_reviewed_book INTEGER NOT NULL, started_read_date DATETIME /*doen't have to be accurate*/, current_page INTEGER DEFAULT 0 CHECK(current_page >= 0), finished_read_date DATETIME /*same goes here*/, thoughts text /*NULL*/, quicknote /*UNSIGNED*/text NOT NULL CHECK(quicknote >= 0), PRIMARY KEY (re_id_ref ASC), FOREIGN KEY (join_reviewed_book) REFERENCES reviewed_book (rv_id_ref) ON UPDATE CASCADE ON DELETE RESTRICT /*should be CASCADE but could use to see stats. how often were which books read*/);
 /*
@@ -158,8 +158,8 @@ in future todo:[db] link to this from quotes, excepts, and other stuff i would w
 
 --todo
 create table quote (q_id_ref INTEGER, join_read INTEGER NOT NULL DEFAULT 1, join_book INTEGER NOT NULL, content text, note text, chapter text, page_from INTEGER, page_to INTEGER, line_from INTEGER, line_to INTEGER, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), is_public INTEGER NOT NULL CHECK(is_public BETWEEN 0 AND 1), PRIMARY KEY (q_id_ref ASC), FOREIGN KEY (join_read) REFERENCES book_read (re_id_ref) ON UPDATE CASCADE ON DELETE SET DEFAULT, FOREIGN KEY (join_book) REFERENCES book (b_id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
---template | to have fun with
-create table quote (q_id_ref INTEGER, join_read INTEGER NOT NULL DEFAULT 1, join_book INTEGER NOT NULL, content text, note text, chapter text, page_from INTEGER, page_to INTEGER, line_from INTEGER, line_to INTEGER, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), is_public INTEGER NOT NULL CHECK(is_public BETWEEN 0 AND 1), PRIMARY KEY (q_id_ref ASC), FOREIGN KEY (join_read) REFERENCES book_read (re_id_ref) ON UPDATE CASCADE ON DELETE SET DEFAULT, FOREIGN KEY (join_book) REFERENCES book (b_id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
+--template | to have fun with*macdone
+create table quote (q_id_ref INTEGER, join_read INTEGER NOT NULL DEFAULT 1, join_book INTEGER NOT NULL, content text, note text, chapter text, page_from INTEGER, page_to INTEGER, line_from INTEGER, line_to INTEGER, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK(created_at <= CURRENT_TIMESTAMP), is_public INTEGER NOT NULL DEFAULT 0 CHECK(is_public BETWEEN 0 AND 1), PRIMARY KEY (q_id_ref ASC), FOREIGN KEY (join_read) REFERENCES book_read (re_id_ref) ON UPDATE CASCADE ON DELETE SET DEFAULT, FOREIGN KEY (join_book) REFERENCES book (b_id_ref) ON UPDATE CASCADE ON DELETE RESTRICT);
 /*
 quotes können public oder private sein
 default ist private, aber wenn man welche public stellt, werden diese auf dem Profil angezeigt.
@@ -189,5 +189,17 @@ the rating out of 5 could get halfes. just check for 0-10 instead of 0-5
 the typical quicknote can be stored as an int, varchar would take up unneccessary space.
     enumerations are used in code, for the 'humans' to keep track.
 */
+--IDEAS=============================================
+create table mapPageToChapter (map_id_ref INTEGER, join_book INTEGER NOT NULL, ...)
 --VIEWS=============================================
-create view account_no_pw as select a_id_ref,loginname,email,last_login,last_logout,created_at from account;
+--these views will late be generated via scripts
+create view account_no_pw AS SELECT a_id_ref,loginname,email,last_login,last_logout,created_at from account;
+
+create view ext_full_book AS SELECT b.b_id_ref AS b_b_id_ref, b.isbn AS b_isbn, b.title AS b_title, b.extended_title AS b_extended_title, b.pages AS b_pages, b.chapter AS b_chapter, b.extra_info AS b_extra_info, au.au_id_ref AS au_au_id_ref, au.first_name AS au_first_name, au.last_name AS au_last_name, au.more_legal_names AS au_more_legal_names, au.pseudonym AS au_pseudonym, au.birthday AS au_birthday, pub.pub_id_ref AS pub_pub_id_ref, pub.title AS pub_title, pub.country_of_origin AS pub_country_of_origin, pub.hq_location AS pub_hq_location FROM book b JOIN author au ON au.au_id_ref = b.join_author JOIN publisher pub ON pub.pub_id_ref = b.join_publisher;
+create view todo_overview AS SELECT b.title AS b_title, re.started_read_date, re.current_page, b.pages as b_pages, re.re_id_ref, a.a_id_ref as a_a_id_ref FROM book_read re JOIN reviewed_book rv ON rv.rv_id_ref = re.join_reviewed_book JOIN book b ON b.b_id_ref = rv.join_book JOIN account a ON a.a_id_ref = rv.join_book WHERE re.finished_read_date IS NULL OR re.current_page IS NOT NULL;
+create view ext_full_reviewed_book AS SELECT rv.rv_id_ref, rv.created_at, rv.first_impression, rv.order_rank, rv.last_updated, b.b_id_ref AS b_b_id_ref, b.isbn AS b_isbn, b.title AS b_title, b.extended_title AS b_extended_title, b.pages AS b_pages, b.chapter AS b_chapter, b.extra_info AS b_extra_info, au.au_id_ref AS au_au_id_ref, au.first_name AS au_first_name, au.last_name AS au_last_name, au.more_legal_names AS au_more_legal_names, au.pseudonym AS au_pseudonym, au.birthday AS au_birthday, pub.pub_id_ref AS pub_pub_id_ref, pub.title AS pub_title, pub.country_of_origin AS pub_country_of_origin, pub.hq_location AS pub_hq_location, a.a_id_ref AS a_a_id_ref FROM reviewed_book rv JOIN book b ON b.b_id_ref = rv.join_book JOIN author au ON au.au_id_ref = b.join_author JOIN publisher pub ON pub.pub_id_ref = b.join_publisher JOIN account a ON a.a_id_ref = rv.join_acc;
+create view ext_full_book_read AS SELECT re.re_id_ref, re.started_read_date, re.current_page, re.finished_read_date, re.thoughts, re.quicknote, rv.rv_id_ref AS rv_rv_id_ref, rv.created_at AS rv_created_at, rv.first_impression AS rv_first_impression, rv.order_rank AS rv_order_rank, rv.last_updated AS rv_last_updated, b.b_id_ref AS b_b_id_ref, b.isbn AS b_isbn, b.title AS b_title, b.extended_title AS b_extended_title, b.pages AS b_pages, b.chapter AS b_chapter, b.extra_info AS b_extra_info, au.au_id_ref AS au_au_id_ref, au.first_name AS au_first_name, au.last_name AS au_last_name, au.more_legal_names AS au_more_legal_names, au.pseudonym AS au_pseudonym, au.birthday AS au_birthday, pub.pub_id_ref AS pub_pub_id_ref, pub.title AS pub_title, pub.country_of_origin AS pub_country_of_origin, pub.hq_location AS pub_hq_location, a.a_id_ref AS a_a_id_ref FROM book_read re JOIN reviewed_book rv ON rv.rv_id_ref = re.join_reviewed_book JOIN book b ON b.b_id_ref = rv.join_book JOIN author au ON au.au_id_ref = b.join_author JOIN publisher pub ON pub.pub_id_ref = b.join_publisher JOIN account a ON a.a_id_ref = rv.join_acc;
+
+create view full_quote AS SELECT q_id_ref, content, note, chapter, page_from, page_to, line_from, line_to, created_at, is_public, join_read, join_book from quote;
+
+-- create view full_book_read AS SELECT re_id_ref, started_read_date, current_page, finished_read_date, thoughts, quicknote FROM book_read;

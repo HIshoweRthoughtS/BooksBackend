@@ -51,17 +51,23 @@ export function checkReviewedUnique(accId, bookId) {
 export function checkReadsInRange(reviewedBookId, startDate, finishDate) {
     return dbBooks.checkReadsInRange(reviewedBookId,startDate,finishDate);
 }
+export function getReviewedId(accId, bookId) {
+    return dbBooks.getReviewedId(bookId, accId);
+}
 export function getReviewedForAcc(accId) {
     return dbBooks.getReviewedForAcc(accId);
+}
+export function getReaedId(reviewedBook, startDate) {
+    return dbBooks.getReaedId(reviewedBook, startDate);
+}
+export function getRead(accId, readId) {
+    return dbBooks.getThisReadPlz(accId, readId);
 }
 export function getTodoForAcc(accId) {
     return dbBooks.getTodoForAcc(accId);
 }
-export function getReviewedId(accId, bookId) {
-    return dbBooks.getReviewedId(bookId, accId);
-}
-export function getReaedId(reviewedBook, startDate) {
-    return dbBooks.getReaedId(reviewedBook, startDate);
+export function getQuotesForRead(readId) {
+    return dbBooks.getQuotesForRead(readId);
 }
 
 //SETTER (update)
@@ -74,6 +80,10 @@ export function setBookLastChapter(bookId, lastChapter) {
 
 export function setTodoCurrentPage(readId, currentPage) {
     return tryDryExecute(dbBooks.setTodoCurrentPage, readId, currentPage);
+}
+
+export function finishTodo(readId, finishDate) {
+    return tryDryExecute(dbBooks.setReadFinishDate, readId, finishDate);
 }
 
 //CREATOR (insert) ==================================
@@ -105,8 +115,8 @@ export function createRead(reviewedBookId, startDate, finishDate, thoughts, quic
 export function createReview(readId,bookId,isPublic,rating,title,essay,tldr) {
     return tryDryExecute(dbBooks.createNewReview, readId,bookId,isPublic,rating,title,essay,tldr);
 }
-export function createQuote(readId,bookId,content,note,chapter,pageFrom,pageTo,lineFrom,lineTo,isPublic) {
-    return tryDryExecute(dbBooks.createNewQuote, readId,bookId,content,note,chapter,pageFrom,pageTo,lineFrom,lineTo,isPublic);
+export function createQuote(readId,bookId,content,note,chapter,pageFrom,pageTo,lineFrom,lineTo) {
+    return tryDryExecute(dbBooks.createNewQuote, readId,bookId,content,note,chapter,pageFrom,pageTo,lineFrom,lineTo);
 }
 
 export function moveTodoReviewed(todoId, reviewedBookId, startDate, finishDate, thoughts, quicknote) {

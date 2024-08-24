@@ -21,6 +21,14 @@ export function getTodoForAcc(accId) {
     return dbHandler.getTodoForAcc(accId);
 }
 
+export function getFullRead(accId, readId) {
+    return dbHandler.getRead(accId, readId);
+}
+
+export function getQuotesForRead(readId) {
+    return dbHandler.getQuotesForRead(readId);
+}
+
 export function setTodoPagesFromBody(readId, body) {
     let success = false;
     if (!!body.current_page) {
@@ -28,11 +36,12 @@ export function setTodoPagesFromBody(readId, body) {
     }
     return success;
 }
-function setBookLastPage(bookId, lastPage) {
-    return dbHandler.setBookLastPage(bookId, lastPage);
-}
 function setTodoCurrentPage(readId, currentPage) {
     return dbHandler.setTodoCurrentPage(readId, currentPage);
+}
+
+export function setReadFinishDate(readId) {
+    return dbHandler.finishTodo(readId, new Date().toISOString());
 }
 
 export function createBookFromBody(body) {
@@ -68,8 +77,9 @@ export function addReviewedChildFromBody(accId,body) {
         if (!!body.finished_read_date) {
             success = addReadFromBody(accId, body);
             if (success) {
-                addReviewsFromBody(reviewedId, body);
-                addQuotesFromBody(reviewedId, body);
+                const readId = dbHandler.getReaedId(reviewedId, body.started_read_date);
+                addReviewsFromBody(readId, body);
+                addQuotesFromBody(readId, body);
             }
         }
         else {
@@ -98,30 +108,30 @@ function addReadFromBody(reviewedId, body) {
     return success;
 }
 
-function addReviewsFromBody(reviewedId, body) {
-    const readId = dbHandler.getReaedId(reviewedId, body.started_read_date);
-    let sRev = false;
+export function addReviewsFromBody(readId, body) {
+    let sRev = false || 0 === body.reviews.length;
     body.reviews.forEach(review => {
         //todo: log every insert, that fails
-        sRev = addReview(readId, body.b_id_ref, review.is_public,review.rating,review.title,review.essay,review.tldr); 
+        sRev = addReview(readId, body.bookid, review.is_public,review.rating,review.title,review.essay,review.tldr); 
     });
     if (!sRev) {
-        console.warn('[BookS] add read - At least one review insert failed');
+        Logger.getLogger().add('add read - At least one review insert failed',3,'BookS');
     }
+    return sRev;
 }
 function addReview(readId,bookId,isPublic,rating,title,essay,tldr) {
     return dbHandler.createReview(readId,bookId,isPublic,rating,title,essay,tldr);
 }
 
-function addQuotesFromBody(reviewedId, body) {
-    const readId = dbHandler.getReaedId(reviewedId, body.started_read_date);
-    let sQuote = false;
+export function addQuotesFromBody(readId, body) {
+    let sQuote = false || 0 === body.quotes.length;
     body.quotes.forEach(quote => {
-        sQuote = addQuote(readId, body.b_id_ref, quote.content,quote.note,quote.chapter,quote.page_from,quote.page_to,quote.line_from,quote.line_to,quote.is_public)
+        sQuote = addQuote(readId, body.bookid, quote.content,quote.note,quote.chapter,quote.page_from,quote.page_to,quote.line_from,quote.line_to,quote.is_public)
     });
     if (!sQuote) {
-        console.warn('[BookS] add read - At least one quote insert failed');
+        Logger.getLogger().add('add read - At least one quote insert failed',3,'BookS');
     }
+    return sQuote;
 }
 function addQuote(readId,bookId,content,note,chapter,pageFrom,pageTo,lineFrom,lineTo,isPublic) {
     return dbHandler.createQuote(readId,bookId,content,note,chapter,pageFrom,pageTo,lineFrom,lineTo,isPublic);
